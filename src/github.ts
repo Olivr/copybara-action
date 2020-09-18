@@ -1,5 +1,5 @@
-import { getOctokit } from '@actions/github';
-import { GitHub as ghAPI } from '@actions/github/lib/utils';
+import { getOctokit } from "@actions/github";
+import { GitHub as ghAPI } from "@actions/github/lib/utils";
 
 export class GitHub {
   api: InstanceType<typeof ghAPI>;

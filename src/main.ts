@@ -1,13 +1,13 @@
-import * as artifact from '@actions/artifact';
-import * as core from '@actions/core';
-import path from 'path';
-import { context } from '@actions/github';
-import { CopyBara } from './copybara';
-import { exitCodes } from './exitCodes';
-import { GitHub } from './github';
-import { homedir } from 'os';
-import { hostConfig } from './hostConfig';
-import { pathExists, readFileSync } from 'fs-extra';
+import * as artifact from "@actions/artifact";
+import * as core from "@actions/core";
+import path from "path";
+import { context } from "@actions/github";
+import { CopyBara } from "./copybara";
+import { exitCodes } from "./exitCodes";
+import { GitHub } from "./github";
+import { homedir } from "os";
+import { hostConfig } from "./hostConfig";
+import { pathExists, readFileSync } from "fs-extra";
 
 async function run(): Promise<void> {
   // Format inputs

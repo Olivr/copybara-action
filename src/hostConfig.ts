@@ -1,5 +1,5 @@
-import { ensureFile, writeFile } from 'fs-extra';
-import { homedir } from 'os';
+import { ensureFile, writeFile } from "fs-extra";
+import { homedir } from "os";
 
 export class hostConfig {
   static gitConfigPath = homedir() + "/.gitconfig";

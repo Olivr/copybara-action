@@ -1,6 +1,6 @@
-import { exec } from '@actions/exec';
-import { exitCodes } from './exitCodes';
-import { hostConfig } from './hostConfig';
+import { exec } from "@actions/exec";
+import { exitCodes } from "./exitCodes";
+import { hostConfig } from "./hostConfig";
 
 export class CopyBara {
   constructor(readonly image: string, readonly imageTag: string) {}
