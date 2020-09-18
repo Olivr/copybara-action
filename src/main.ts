@@ -199,8 +199,8 @@ async function run(): Promise<void> {
 process.on("unhandledRejection", (err) => exit(53, err as string));
 
 // Exit action
-function exit(exitCode: number, message: string = "") {
-  const ec = exitCodes.hasOwnProperty(exitCode) ? exitCodes[exitCode] : exitCodes[53];
+function exit(exitCode: number, message = "") {
+  const ec = Object.prototype.hasOwnProperty.call(exitCodes, exitCode) ? exitCodes[exitCode] : exitCodes[53];
 
   const msg = `[${ec.ns}] ${exitCode}: ${message ? message : ec.msg}`;
   core.setOutput("msg", msg);
@@ -208,15 +208,15 @@ function exit(exitCode: number, message: string = "") {
   switch (ec.type) {
     case "success":
       core.info(msg);
-      process.exit(0);
+      process.exit(0); // eslint-disable-line no-process-exit
 
     case "warning":
       core.warning(msg);
-      process.exit(0);
+      process.exit(0); // eslint-disable-line no-process-exit
 
     default:
       core.setFailed(msg);
-      process.exit(1);
+      process.exit(1); // eslint-disable-line no-process-exit
   }
 }
 

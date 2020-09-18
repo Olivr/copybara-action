@@ -2501,19 +2501,19 @@ function run() {
 process.on("unhandledRejection", (err) => exit(53, err));
 // Exit action
 function exit(exitCode, message = "") {
-    const ec = exitCodes_1.exitCodes.hasOwnProperty(exitCode) ? exitCodes_1.exitCodes[exitCode] : exitCodes_1.exitCodes[53];
+    const ec = Object.prototype.hasOwnProperty.call(exitCodes_1.exitCodes, exitCode) ? exitCodes_1.exitCodes[exitCode] : exitCodes_1.exitCodes[53];
     const msg = `[${ec.ns}] ${exitCode}: ${message ? message : ec.msg}`;
     core.setOutput("msg", msg);
     switch (ec.type) {
         case "success":
             core.info(msg);
-            process.exit(0);
+            process.exit(0); // eslint-disable-line no-process-exit
         case "warning":
             core.warning(msg);
-            process.exit(0);
+            process.exit(0); // eslint-disable-line no-process-exit
         default:
             core.setFailed(msg);
-            process.exit(1);
+            process.exit(1); // eslint-disable-line no-process-exit
     }
 }
 run();
