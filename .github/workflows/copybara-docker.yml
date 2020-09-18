@@ -1,0 +1,22 @@
+name: Publish Copybara Docker Image
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  publish-copybara:
+    runs-on: ubuntu-latest
+    name: Publish to Docker Hub
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: google/copybara
+          fetch-depth: 1
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1.1.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: olivr/copybara
+          tags: latest

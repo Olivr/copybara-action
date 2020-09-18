@@ -1,0 +1,47 @@
+name: "Test 'Push' Workflow"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  e2e-test:
+    name: "'Push' E2E tests"
+    if: github.repository == 'olivr/copybara-action'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: "[Test] Basic usage"
+        uses: ./
+        with:
+          sot_repo: olivr/copybara-action
+          destination_repo: olivr/copybara-action-test
+          access_token: ${{ secrets.GH_TOKEN }}
+          ssh_key: ${{ secrets.SSH_KEY }}
+
+      - name: "[Test] Missing repos"
+        id: missing-repos
+        continue-on-error: true
+        uses: ./
+        with:
+          destination_repo: olivr/copybara-action-test
+          ssh_key: ${{ secrets.SSH_KEY }}
+          workflow: push
+      - name: ".........⏳"
+        if: steps.missing-repos.outcome != 'failure' || !startsWith(steps.missing-repos.outputs.msg, '[action] 51')
+        run: exit 1
+
+      - name: "[Test] Missing token"
+        id: missing-token
+        continue-on-error: true
+        uses: ./
+        with:
+          sot_repo: olivr/copybara-action
+          destination_repo: olivr/copybara-action-test
+          ssh_key: ${{ secrets.SSH_KEY }}
+      - name: "..........⏳"
+        if: steps.missing-token.outcome != 'failure' || !startsWith(steps.missing-token.outputs.msg, '[action] 51')
+        run: exit 1

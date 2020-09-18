@@ -1,0 +1,107 @@
+name: 'Easy Copybara'
+description: 'An action for transforming and moving code between repositories.'
+author: 'Romain Barissat'
+inputs:
+  ssh_key:
+    description: 'SSH public key.'
+    required: true
+
+  sot_repo:
+    description: 'Source repository (source of truth).'
+    required: false
+
+  destination_repo:
+    description: 'Destination repository.'
+    required: false
+
+  access_token:
+    description: 'Personal access token.'
+    required: false
+
+  sot_branch:
+    description: 'SoT branch.'
+    required: false
+    default: '' # Leave empty to use default branch
+
+  destination_branch:
+    description: 'Destination branch.'
+    required: false
+    default: '' # Leave empty to use the same as SoT's branch name
+
+  workflow:
+    description: 'Workflow to execute.'
+    required: false
+    default: '' # Leave empty to auto-detect push or pr
+
+  ssh_known_hosts:
+    description: 'SSH known hosts file contents, for authenticating with Copybara'
+    required: false
+    default: ''
+
+  include_files_sot:
+    description: 'Files to include when pushing from SoT => Destination (comma separated globs).'
+    required: false
+    default: '**'
+
+  exclude_files_sot:
+    description: 'Files to exclude when pushing from SoT => Destination (comma separated globs).'
+    required: false
+    default: ''
+
+  include_files_dest:
+    description: 'Files to include when pulling from Destination => SoT (comma separated globs).'
+    required: false
+    default: '**'
+
+  exclude_files_dest:
+    description: 'Files to exclude when pulling from Destination => SoT (comma separated globs).'
+    required: false
+    default: ''
+
+  make_root_path:
+    description: 'Use a sub-path of the source repo for the root path of the destination repo.'
+    required: false
+    default: ''
+
+  committer:
+    description: 'Who will commit changes.'
+    required: false
+    default: Github Actions <actions@github.com>
+
+  default_author:
+    description: "Default author if the original author can't passed through."
+    required: false
+    default: Github Actions <actions@github.com>
+
+  copybara_image:
+    description: 'Copybara Docker image to run.'
+    required: false
+    default: 'olivr/copybara'
+
+  copybara_image_tag:
+    description: 'Copybara Docker image tag to use.'
+    required: false
+    default: 'latest'
+
+  pr_number:
+    description: "If you manually specified the 'pr' workflow, you will need to specify the PR number as well."
+    required: false
+    default: ''
+
+  create_repo:
+    description: "If the destination repo doesn't exist, it will be created (subject to enough permissions attached to the access token)."
+    required: false
+    default: 'true'
+
+  copybara_options:
+    description: 'Use this, if you want to manually specify some command line options.'
+    required: false
+    default: ''
+
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'copy'
+  color: 'purple'
