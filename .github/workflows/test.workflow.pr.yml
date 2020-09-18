@@ -106,6 +106,8 @@ jobs:
         with:
           node-version: 12
 
+      - run: git checkout main
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
