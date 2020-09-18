@@ -112,7 +112,5 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Trick semantic release because releasing from a PR is unusual but necessary in our case
-          GITHUB_EVENT_NAME: push
-          GITHUB_REF: main
-        run: npx semantic-release -e ./.config/release.config.js
+        # Trick semantic release because releasing from a PR is unusual but necessary in our case
+        run: GITHUB_EVENT_NAME=push GITHUB_REF=main npx semantic-release -e ./.config/release.config.js
