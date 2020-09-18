@@ -106,12 +106,13 @@ jobs:
         with:
           node-version: 12
 
-      - run: git checkout main
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release -e ./.config/release.config.js --no-ci
+          # Trick semantic release because releasing from a PR is unusual but necessary in our case
+          GITHUB_EVENT_NAME: push
+          GITHUB_REF: main
+        run: npx semantic-release -e ./.config/release.config.js
