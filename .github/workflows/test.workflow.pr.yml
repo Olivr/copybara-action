@@ -89,3 +89,27 @@ jobs:
 
       - name: "🧹 Delete PR branch"
         run: git push origin :${{github.head_ref}}
+
+  # Once the test PR is cleaned up by the job above, it means all the tests have passed and we can release new code
+  release:
+    name: Release new version
+    needs: [cleanup-test]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.0
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release -e ./.config/release.config.js
