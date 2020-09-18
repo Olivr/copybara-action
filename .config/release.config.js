@@ -19,6 +19,7 @@ const logSections = convention.types.map(({ name, logSection }) => ({
 }));
 
 module.exports = {
+  branches: ["main"],
   plugins: [
     [
       "@semantic-release/commit-analyzer",
