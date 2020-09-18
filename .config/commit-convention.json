@@ -1,0 +1,55 @@
+{
+  "enable": {
+    "scopes": false,
+    "customScopes": true
+  },
+  "sentenceCase": {
+    "type": true,
+    "scope": false,
+    "subject": true
+  },
+  "types": [
+    {
+      "name": "feat",
+      "description": "feat:     A new feature",
+      "logSection": "Features",
+      "releaseType": "minor",
+      "allowBreakingChange": true
+    },
+    {
+      "name": "fix",
+      "description": "fix:      A bug fix",
+      "logSection": "Bug Fixes",
+      "releaseType": "patch",
+      "allowBreakingChange": true
+    },
+    {
+      "name": "perf",
+      "description": "perf:     A code change that improves performance",
+      "releaseType": "patch",
+      "allowBreakingChange": true
+    },
+    {
+      "name": "docs",
+      "description": "docs:     Documentation only changes"
+    },
+    {
+      "name": "chore",
+      "description": "chore:    Changes to the build process or auxiliary tools",
+      "scopeOverrides": ["build", "ci"]
+    },
+    {
+      "name": "style",
+      "description": "style:    Changes that do not affect the meaning of the code\n            (white-space, formatting, missing semi-colons, etc)"
+    },
+    {
+      "name": "refactor",
+      "description": "refactor: A code change that neither fixes a bug nor adds a feature"
+    },
+    {
+      "name": "test",
+      "description": "test:     Adding missing tests"
+    }
+  ],
+  "scopes": ["parser", "lang"]
+}
