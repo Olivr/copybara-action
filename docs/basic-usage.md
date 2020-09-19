@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: olivr/1.0.4
+      - uses: copybara-action@v1
         with:
           sot_repo: your/repo
           destination_repo: other/repo
