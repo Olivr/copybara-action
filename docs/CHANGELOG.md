@@ -1,3 +1,10 @@
+### [1.0.4](https://github.com/olivr/copybara-action/compare/v1.0.3...v1.0.4) (2020-09-19)
+
+
+### Bug Fixes
+
+* Automatic version update was in wrong semantic-release step ([a06e19a](https://github.com/olivr/copybara-action/commit/a06e19a0704758cfce5baa0c92d430efb693078c))
+
 ### [1.0.3](https://github.com/olivr/copybara-action/compare/v1.0.2...v1.0.3) (2020-09-19)
 
 
