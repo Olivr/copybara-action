@@ -2,17 +2,50 @@ name: "Test 'Push' Workflow"
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
+  build:
+    name: Test build
+    if: github.repository == 'olivr/copybara-action' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.0
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build && yarn package
+
+      - name: "[Test] Unit tests"
+        run: yarn test
+
   e2e-test:
     name: "'Push' E2E tests"
-    if: github.repository == 'olivr/copybara-action'
+    if: github.repository == 'olivr/copybara-action' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.0
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build && yarn package
+
+      - name: "[Test] Unit tests"
+        run: yarn test
 
       - name: "[Test] Basic usage"
         uses: ./

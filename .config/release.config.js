@@ -40,7 +40,7 @@ module.exports = {
       "@semantic-release/exec",
       {
         prepareCmd:
-          "find docs/*.md -type f -exec sed -i -E 's/copybara-action@[^s]+/copybara-action@v${nextRelease.version}/g' {} +",
+          "yarn install --frozen-lockfile && yarn prepare-release && find docs/*.md -type f -exec sed -i -E 's/copybara-action@[^s]+/copybara-action@v${nextRelease.version}/g' {} +",
       },
     ],
     [

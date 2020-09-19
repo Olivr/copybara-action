@@ -43,6 +43,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.0
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build && yarn package
+
       - name: "[Test] Basic usage"
         uses: ./
         with:
@@ -105,9 +116,6 @@ jobs:
         uses: actions/setup-node@v2.1.0
         with:
           node-version: 12
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
 
       - name: Release
         env:

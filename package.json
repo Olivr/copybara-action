@@ -11,7 +11,7 @@
     "lint": "eslint src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
     "test": "jest --passWithNoTests",
-    "all": "yarn build && yarn format && yarn lint && yarn package && yarn test"
+    "prepare-release": "yarn build && yarn format && yarn lint && yarn package && yarn test"
   },
   "repository": {
     "type": "git",
@@ -68,8 +68,7 @@
   "husky": {
     "hooks": {
       "prepare-commit-msg": "exec < /dev/tty && git-cz --hook || true",
-      "commit-msg": "echo $HUSKY_GIT_PARAMS && echo $HUSKY_GIT_STDIN && commitlint -E HUSKY_GIT_PARAMS --config .config/commitlint.config.js",
-      "pre-push": "echo \"Making sure you didn't forget to build and commit ./dist...\" && yarn all && [[ -z $(git status -s dist) ]]"
+      "commit-msg": "echo $HUSKY_GIT_PARAMS && echo $HUSKY_GIT_STDIN && commitlint -E HUSKY_GIT_PARAMS --config .config/commitlint.config.js"
     }
   }
 }
