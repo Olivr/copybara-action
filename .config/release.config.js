@@ -37,6 +37,13 @@ module.exports = {
       },
     ],
     [
+      "@semantic-release/exec",
+      {
+        generateNotes:
+          "find docs/*.md -type f -print0 | xargs -0 sed -i '' -E 's/(copybara-action@)[^s]+/\1${nextRelease.version}/g'",
+      },
+    ],
+    [
       "@semantic-release/git",
       {
         assets: ["docs", "package.json"],
@@ -44,12 +51,5 @@ module.exports = {
       },
     ],
     ["@semantic-release/github"],
-    [
-      "@semantic-release/exec",
-      {
-        generateNotes:
-          "find docs/*.md -type f -print0 | xargs -0 sed -i '' -E 's/(copybara-action@)[^s]+/\1${nextRelease.version}/g'",
-      },
-    ],
   ],
 };
