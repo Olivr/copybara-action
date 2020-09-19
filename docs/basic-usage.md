@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: copybara-action@v1
+      - uses: copybara-action@v1.0.5
         with:
           sot_repo: your/repo
           destination_repo: other/repo

@@ -1,3 +1,10 @@
+### [1.0.5](https://github.com/olivr/copybara-action/compare/v1.0.4...v1.0.5) (2020-09-19)
+
+
+### Bug Fixes
+
+* Shell command for automatic version update was buggy ([5c92ba5](https://github.com/olivr/copybara-action/commit/5c92ba557bc6c630a75ba0a5a6b0b49b51fd9a7a))
+
 ### [1.0.4](https://github.com/olivr/copybara-action/compare/v1.0.3...v1.0.4) (2020-09-19)
 
 
