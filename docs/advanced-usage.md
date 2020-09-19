@@ -32,4 +32,4 @@ When you enable debug mode, this action will create an artifact containing your 
 2. Run the action workflow (most likely create a commit in SoT and a PR in destination)
 3. Check out the artifacts for this workflow run
 
-![artifact](img/artifact.png)
+![artifact](images/artifact.png)

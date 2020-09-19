@@ -19,7 +19,7 @@ In both your SoT and destination repos, add a new secret `SSH_KEY` and copy the 
 
 ## Generate a private/public key pair
 
-![it works on my machine](img/works-on-my-machine.png)
+![it works on my machine](images/works-on-my-machine.png)
 
 ```sh
 ssh-keygen -N "" -m PEM -t rsa -f temp_key -q

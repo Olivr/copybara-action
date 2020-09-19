@@ -1,10 +1,25 @@
 # Copybara Action
 
-[Copybara](https://github.com/google/copybara) is a great tool for transforming and moving code between repositories.
+Google's [Copybara](https://github.com/google/copybara) is a great tool for transforming and moving code between repositories.
 
-This action comes with sensible defaults to make it **very easy** for you to use Copybara but is also **100% customizable** so you can use it with your own config, your own Docker image.
+This action comes with sensible defaults to make it **very easy** for you to use Copybara with Github but is also **100% customizable** so you can use it with your own config, your own Docker image.
 
-## Default flow
+<!-- prettier-ignore-start -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [💾 Installation](#-installation)
+- [🔥 Usage](#-usage)
+- [💚 Contributing](#-contributing)
+  - [Top five ways to contribute](#top-five-ways-to-contribute)
+- [💡 Todo](#-todo)
+- [💬 Support](#-support)
+- [📜 License](#-license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- prettier-ignore-end -->
+
+## 🔁 Default flow
 
 ```text
  Source of Truth                  Destination
@@ -28,35 +43,59 @@ This action comes with sensible defaults to make it **very easy** for you to use
 
 > This is the default generated flow, you can customize it
 
-## Example: simple mirroring
+## 🔥 [Basic usage](basic-usage.md)
 
-```yaml
-on:
-  push:
-  pull_request:
-jobs:
-  move-code:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: olivr/copybara-action@v1
-        with:
-          sot_repo: your/repo
-          destination_repo: other/repo
-          access_token: ${{ secrets.GH_TOKEN }} # Personal access token
-          ssh_key: ${{ secrets.SSH_KEY }} # For this example, use a key attached to a user
-```
+## 🧨 [Advanced usage](advanced-usage.md)
 
-More examples in [basic usage](basic-usage.md) and [advanced usage](advanced-usage.md)
+## 🔘 [Options](options.md)
 
-## [Basic usage](basic-usage.md)
+## 💚 Contributing
 
-## [Advanced usage](advanced-usage.md)
+<!-- project-contributing -->
 
-## [Options](options.md)
+### [Developer documentation](development.md)
 
-## [Contributing](contributing.md)
+### Five other ways to contribute
 
-## Acknowledgements
+⭐ Star this repo: it's quick and goes a long way! [🔝](#top)
+
+🗣️ [Spread the word](CONTRIBUTING.md#spread-the-word)
+
+🐞 [Report bugs](CONTRIBUTING.md#report-bugs)
+
+✅ [Resolve issues](CONTRIBUTING.md#resolve-issues)
+
+📝 [Improve the documentation](CONTRIBUTING.md#improve-the-documentation)
+
+<!-- project-contributing -->
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) in the docs folder for more information.
+
+## 💡 Todo
+
+<!-- project-todo -->
+
+- [ ] Update documentation
+- [ ] Add more transformations in the basic usage
+
+<!-- project-todo -->
+
+## 💬 Support
+
+<!-- project-support -->
+
+[Discuss on Keybase](https://keybase.io/team/olivr)
+
+<!-- project-support -->
+
+## 📜 License
+
+<!-- project-license -->
+
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details
+
+<!-- project-license -->
+
+## 🙏 Acknowledgements
 
 Thanks to the developers behind [Copybara](https://github.com/google/copybara). This action would not exist without this excellent tool.

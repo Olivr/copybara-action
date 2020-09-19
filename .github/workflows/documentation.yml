@@ -1,0 +1,21 @@
+name: Documentation
+
+on: push
+
+jobs:
+  readme:
+    if: github.repository == 'olivr/copybara-action'
+    name: Update readme
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Generate and commit table of content
+        uses: technote-space/toc-generator@v2
+        with:
+          TARGET_PATHS: README.md
+          MAX_HEADER_LEVEL: 3
+          COMMIT_MESSAGE: Update table of contents
+          PR_TITLE: Update table of contents (${PR_MERGE_REF})
+      ##-- workflow-documentation-readme-steps --##
+  ##-- workflow-documentation-jobs --##

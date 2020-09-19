@@ -25,16 +25,16 @@ Now, you cannot commit **unless you force-push** to the main branch so it doesn'
 
 ### Branch protection settings
 
-![branch protection settings](img/branch-protection.png)
+![branch protection settings](images/branch-protection.png)
 
 ### Cannot merge
 
-![branch protection merge](img/branch-protection-pr-merge.png)
+![branch protection merge](images/branch-protection-pr-merge.png)
 
 ### Cannot commit in the UI
 
-![branch protection merge](img/branch-protection-ui-commit.png)
+![branch protection merge](images/branch-protection-ui-commit.png)
 
 ### Cannot commit in the CLI
 
-![branch protection merge](img/branch-protection-cli-commit.png)
+![branch protection merge](images/branch-protection-cli-commit.png)
