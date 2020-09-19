@@ -117,6 +117,9 @@ jobs:
         with:
           node-version: 12
 
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
