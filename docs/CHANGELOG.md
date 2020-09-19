@@ -1,3 +1,10 @@
+### [1.0.1](https://github.com/olivr/copybara-action/compare/v1.0.0...v1.0.1) (2020-09-19)
+
+
+### Bug Fixes
+
+* Update action's version automatically in documentation ([67d5d8a](https://github.com/olivr/copybara-action/commit/67d5d8a487cf83fb507c410fbeb35451610a72da))
+
 ## 1.0.0 (2020-09-18)
 
 ### ⚠ BREAKING CHANGES
