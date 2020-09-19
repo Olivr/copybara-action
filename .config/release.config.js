@@ -39,8 +39,8 @@ module.exports = {
     [
       "@semantic-release/exec",
       {
-        generateNotes:
-          "find docs/*.md -type f -print0 | xargs -0 sed -i -E 's/(copybara-action@)[^s]+/\1${nextRelease.version}/g'",
+        prepareCmd:
+          "find docs/*.md -type f -exec sed -i -E 's/(copybara-action@)[^s]+/\1${nextRelease.version}/g' {} +",
       },
     ],
     [
