@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: olivr/copybara-action@v1.1.0
+      - uses: olivr/copybara-action@v1.1.1
         with:
           sot_repo: your/repo
           destination_repo: other/repo

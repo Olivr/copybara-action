@@ -1,3 +1,5 @@
+### [1.1.1](https://github.com/olivr/copybara-action/compare/v1.1.0...v1.1.1) (2020-09-22)
+
 ## [1.1.0](https://github.com/olivr/copybara-action/compare/v1.0.5...v1.1.0) (2020-09-22)
 
 
