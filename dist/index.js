@@ -2620,8 +2620,8 @@ class CopyBara {
         return `
 core.workflow(
     name = "push",
-    origin = git.github_origin(
-        url = "git@github.com:${config.sotRepo}.git",
+    origin = git.origin(
+        url = "file:///usr/src/app",
         ref = "${config.sotBranch}",
     ),
     destination = git.github_destination(
