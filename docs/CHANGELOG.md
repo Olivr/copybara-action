@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/olivr/copybara-action/compare/v1.0.5...v1.1.0) (2020-09-22)
+
+
+### Features
+
+* Add custom config input ([a4d2886](https://github.com/olivr/copybara-action/commit/a4d288690526d10e45631ad77121276a9667e6ad))
+
 ### [1.0.5](https://github.com/olivr/copybara-action/compare/v1.0.4...v1.0.5) (2020-09-19)
 
 
