@@ -2387,6 +2387,9 @@ function run() {
             // Detect current repo
             const currentRepo = `${github_1.context.repo.owner}/${github_1.context.repo.repo}`;
             core.debug(`  Current repo is ${currentRepo}`);
+            // Detect current branch
+            const currentBranch = github_1.context.ref.replace(/^refs\/heads\//, "");
+            core.debug(`  Current branch is ${currentBranch}`);
             // Detect if current repo is SoT or destination
             if (currentRepo == destinationRepo) {
                 if (!github_1.context.payload.pull_request)
@@ -2403,6 +2406,8 @@ function run() {
                     const gh = new github_2.GitHub(accessToken);
                     // Detect SoT branch if none specified
                     sotBranch = sotBranch ? sotBranch : yield gh.getDefaultBranch(sotRepo);
+                    if (currentBranch != sotBranch)
+                        exit(54, `Nothing to do in the SoT repo except on the "${sotBranch}" branch.`);
                     // Determine destination branch if none specified
                     destinationBranch = destinationBranch ? destinationBranch : sotBranch;
                     workflow = (yield gh.branchExists(destinationRepo, destinationBranch, createRepo)) ? "push" : "init";
