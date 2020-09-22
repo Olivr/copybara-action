@@ -69,6 +69,10 @@ async function run(): Promise<void> {
     const currentRepo = `${context.repo.owner}/${context.repo.repo}`;
     core.debug(`  Current repo is ${currentRepo}`);
 
+    // Detect current branch
+    const currentBranch = context.ref.replace(/^refs\/heads\//, "");
+    core.debug(`  Current branch is ${currentBranch}`);
+
     // Detect if current repo is SoT or destination
     if (currentRepo == destinationRepo) {
       if (!context.payload.pull_request) exit(54, "Nothing to do in the destination repo except for Pull Requests.");
@@ -86,6 +90,7 @@ async function run(): Promise<void> {
 
         // Detect SoT branch if none specified
         sotBranch = sotBranch ? sotBranch : await gh.getDefaultBranch(sotRepo);
+        if (currentBranch != sotBranch) exit(54, `Nothing to do in the SoT repo except on the "${sotBranch}" branch.`);
 
         // Determine destination branch if none specified
         destinationBranch = destinationBranch ? destinationBranch : sotBranch;
