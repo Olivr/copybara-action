@@ -1,0 +1,29 @@
+name: Test build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: Test build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.0
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Ensure build was committed (necessary for Github Actions)
+        run: "[[ -z $(git status -s dist) ]]"
+
+      - name: "[Test] Unit tests"
+        run: yarn test

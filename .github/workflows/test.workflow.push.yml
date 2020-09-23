@@ -2,11 +2,14 @@ name: "Test 'Push' Workflow"
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
+  # same job as build.yml copied here to keep build & E2E workflows separate
+  # Can be optimized once Github supports Actions partials
   build:
     name: Test build
-    if: github.repository == 'olivr/copybara-action' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,34 +23,24 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build
-        run: yarn build && yarn package
+        run: yarn build
+
+      - name: Ensure build was committed (necessary for Github Actions)
+        run: "[[ -z $(git status -s dist) ]]"
 
       - name: "[Test] Unit tests"
         run: yarn test
 
   e2e-test:
     name: "'Push' E2E tests"
-    if: github.repository == 'olivr/copybara-action' && github.ref == 'refs/heads/main'
+    if: github.repository == 'olivr/copybara-action'
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2.1.0
-        with:
-          node-version: 12
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build
-        run: yarn build && yarn package
-
-      - name: "[Test] Unit tests"
-        run: yarn test
 
       - name: "[Test] Basic usage"
         uses: ./
