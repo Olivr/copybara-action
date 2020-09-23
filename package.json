@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "description": "Transform and move code between repositories.",
-  "main": "lib/main.js",
+  "main": "src/main.ts",
   "scripts": {
-    "build": "ncc build ./src/main.ts --source-map --license licenses.txt",
+    "build": "ncc build --source-map --license licenses.txt",
+    "build:check": "yarn build && [[ -z $(git status -s dist) ]]",
     "format": "prettier --write **/*.ts",
     "format:check": "prettier --check **/*.ts",
-    "lint": "eslint src/**/*.ts",
+    "lint": "eslint --cache --fix src/**/*.ts",
     "test": "jest --passWithNoTests",
     "test:local": "act --secret-file=.secrets",
     "test:local:watch": "yarn test:action --watch"
@@ -55,6 +56,7 @@
     "jest": "^24.9.0",
     "jest-circus": "^26.4.2",
     "js-yaml": "^3.14.0",
+    "lint-staged": ">=10",
     "prettier": "2.1.1",
     "ts-jest": "^24.3.0",
     "typescript": "^4.0.2"
@@ -68,7 +70,10 @@
     "hooks": {
       "prepare-commit-msg": "exec < /dev/tty && git-cz --hook || true",
       "commit-msg": "echo $HUSKY_GIT_PARAMS && echo $HUSKY_GIT_STDIN && commitlint -E HUSKY_GIT_PARAMS --config .config/commitlint.config.js",
-      "pre-push": "echo \"Making sure you didn't forget to build and commit ./dist...\" && yarn build && [[ -z $(git status -s dist) ]]"
+      "pre-commit": "lint-staged && ./.config/commit-build.sh"
     }
+  },
+  "lint-staged": {
+    "src/**/*.ts": "eslint --cache --fix"
   }
 }
