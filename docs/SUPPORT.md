@@ -1,7 +1,4 @@
 # Get Support
 
-<!-- project-support -->
-
-Please see [this link](https://keybase.io/team/olivr)
-
-<!-- project-support -->
+- For questions about with this action: [Join Olivr on Keybase](https://keybase.io/team/olivr)
+- For questions about Copybara: [Copybara's repo](https://github.com/google/copybara/)
