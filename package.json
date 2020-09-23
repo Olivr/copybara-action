@@ -5,13 +5,13 @@
   "description": "Transform and move code between repositories.",
   "main": "lib/main.js",
   "scripts": {
-    "build": "tsc",
+    "build": "ncc build ./src/main.ts --source-map --license licenses.txt",
     "format": "prettier --write **/*.ts",
-    "format-check": "prettier --check **/*.ts",
+    "format:check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "package": "ncc build --source-map --license licenses.txt",
     "test": "jest --passWithNoTests",
-    "prepare-release": "yarn build && yarn format && yarn lint && yarn package && yarn test"
+    "test:local": "act --secret-file=.secrets",
+    "test:local:watch": "yarn test:action --watch"
   },
   "repository": {
     "type": "git",
@@ -19,8 +19,7 @@
   },
   "keywords": [
     "actions",
-    "node",
-    "setup"
+    "copybara"
   ],
   "author": "",
   "license": "MIT",
@@ -68,7 +67,8 @@
   "husky": {
     "hooks": {
       "prepare-commit-msg": "exec < /dev/tty && git-cz --hook || true",
-      "commit-msg": "echo $HUSKY_GIT_PARAMS && echo $HUSKY_GIT_STDIN && commitlint -E HUSKY_GIT_PARAMS --config .config/commitlint.config.js"
+      "commit-msg": "echo $HUSKY_GIT_PARAMS && echo $HUSKY_GIT_STDIN && commitlint -E HUSKY_GIT_PARAMS --config .config/commitlint.config.js",
+      "pre-push": "echo \"Making sure you didn't forget to build and commit ./dist...\" && yarn build && [[ -z $(git status -s dist) ]]"
     }
   }
 }
