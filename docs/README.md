@@ -32,8 +32,11 @@ This action comes with sensible defaults to make it **very easy** for you to use
 
 ## 🧨 [Advanced usage](advanced-usage.md)
 
-## 🔘 [Options](options.md)
-
-## 💬 [Support](https://keybase.io/team/olivr) (on Keybase)
+## 🔘 [All options](inputs.md)
 
 ## 💚 [Contributing](CONTRIBUTING.md)
+
+## 💬 Support
+
+- For questions about with this action: [Join Olivr on Keybase](https://keybase.io/team/olivr)
+- For questions about Copybara: [Copybara's repo](https://github.com/google/copybara/)

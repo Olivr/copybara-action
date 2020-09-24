@@ -18,7 +18,7 @@ It is recommended to [protect the destination branch](branch-protection.md) to p
 All examples assume you have already added the following secrets to both repos:
 
 - `SSH_KEY`
-- `GH_TOKEN` (note: this is different from the `GITHUB_TOKEN` variable which is available in all actions but doesn't have the necessary permissions)
+- `GH_TOKEN` (note: this is different from the `GITHUB_TOKEN` variable which is available in all GitHub Actions but doesn't have cross-repo permissions)
 
 ### Simple mirror
 
@@ -42,3 +42,13 @@ jobs:
           access_token: ${{ secrets.GH_TOKEN }}
           ssh_key: ${{ secrets.SSH_KEY }}
 ```
+
+### [More options](inputs.md)
+
+### [Advanced usage](advanced-usage.md)
+
+## Important notes
+
+This action will work on a normal usage of Git but if you start 'toying' around with the Git history of your SoT, it will most likely break the sync and you will have to debug manually. So, while you can do as many force-pushes, rebases and merges on your pull request branches, **don't do it with the base branch**!
+
+> If you want to revert something on your main branch, use `git revert`
