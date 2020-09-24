@@ -1,3 +1,14 @@
+### [1.1.2](https://github.com/olivr/copybara-action/compare/v1.1.1...v1.1.2) (2020-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* The input `copybara_options` is now taking space-separated options
+
+### Bug Fixes
+
+* Changed some options ([f9be6b4](https://github.com/olivr/copybara-action/commit/f9be6b4018c83c6c5e78a713a3df9dc4f79d4202))
+
 ### [1.1.1](https://github.com/olivr/copybara-action/compare/v1.1.0...v1.1.1) (2020-09-22)
 
 ## [1.1.0](https://github.com/olivr/copybara-action/compare/v1.0.5...v1.1.0) (2020-09-22)
