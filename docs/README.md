@@ -38,5 +38,5 @@ This action comes with sensible defaults to make it **very easy** for you to use
 
 ## 💬 Support
 
-- For questions about this action: [Join Olivr on Keybase](https://keybase.io/team/olivr)
+- For questions about this action: [Join Oliv'r on Keybase](https://keybase.io/team/olivr)
 - For questions about Copybara: [Copybara's repo](https://github.com/google/copybara/)
