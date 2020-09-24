@@ -10105,9 +10105,19 @@ class CopyBara {
                 throw 52;
         });
     }
+    static changeGlobsRoots(rootPath, globs) {
+        return globs.map((glob) => glob.replace(/^\/?/, `${rootPath}/`));
+    }
     static pushConfig(config) {
-        const exclude = config.excludeFilesSot && config.excludeFilesSot[0] ? `, exclude = ["${config.excludeFilesSot.join('",')}"]` : "";
-        const move = config.makeRootPath ? `core.move("${config.makeRootPath}", ""),` : "";
+        let move = "";
+        let includeGlobs = config.includeFilesSot || [];
+        let excludeGlobs = config.excludeFilesSot || [];
+        if (config.makeRootPath) {
+            move = `core.move("${config.makeRootPath}", ""),`;
+            includeGlobs = this.changeGlobsRoots(config.makeRootPath, includeGlobs);
+            excludeGlobs = this.changeGlobsRoots(config.makeRootPath, excludeGlobs);
+        }
+        const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
         return `
 core.workflow(
     name = "push",
@@ -10119,7 +10129,7 @@ core.workflow(
         url = "git@github.com:${config.destinationRepo}.git",
         push = "${config.destinationBranch}",
     ),
-    origin_files = glob(["${config.includeFilesSot.join('",')}"]${exclude}),
+    origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
     authoring = authoring.pass_thru(default = "${config.defaultAuthor}"),
     mode = "ITERATIVE",
     transformations = [
@@ -10130,10 +10140,13 @@ core.workflow(
 )`;
     }
     static prConfig(config) {
-        const exclude = config.excludeFilesDest && config.excludeFilesDest[0]
-            ? `, exclude = ["${config.excludeFilesDest.join('",')}"]`
-            : "";
-        const move = config.makeRootPath ? `core.move("", "${config.makeRootPath}"),` : "";
+        let move = "";
+        const includeGlobs = config.excludeFilesDest || [];
+        const excludeGlobs = config.excludeFilesDest || [];
+        if (config.makeRootPath) {
+            move = `core.move("", "${config.makeRootPath}"),`;
+        }
+        const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
         return `
 core.workflow(
     name = "pr",
@@ -10146,7 +10159,7 @@ core.workflow(
         destination_ref = "${config.sotBranch}",
         integrates = [],
     ),
-    origin_files = glob(["${config.includeFilesDest.join('",')}"]${exclude}),
+    origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
     authoring = authoring.pass_thru(default = "${config.defaultAuthor}"),
     mode = "CHANGE_REQUEST",
     set_rev_id = False,
