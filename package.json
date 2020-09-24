@@ -58,8 +58,10 @@
     "js-yaml": "^3.14.0",
     "lint-staged": ">=10",
     "prettier": "2.1.1",
+    "tablemark": "^2.0.0",
     "ts-jest": "^24.3.0",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.2",
+    "yaml": "^1.10.0"
   },
   "config": {
     "commitizen": {
@@ -70,7 +72,7 @@
     "hooks": {
       "prepare-commit-msg": "exec < /dev/tty && git-cz --hook || true",
       "commit-msg": "echo $HUSKY_GIT_PARAMS && echo $HUSKY_GIT_STDIN && commitlint -E HUSKY_GIT_PARAMS --config .config/commitlint.config.js",
-      "pre-commit": "lint-staged && ./.config/commit-build.sh"
+      "pre-commit": "lint-staged && ./.config/commit-docs.sh && ./.config/commit-build.sh"
     }
   },
   "lint-staged": {
