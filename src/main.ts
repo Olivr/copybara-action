@@ -26,13 +26,10 @@ async function run(): Promise<void> {
   const customConfig: string = core.getInput("custom_config");
   const copybaraImage: string = core.getInput("copybara_image");
   const copybaraImageTag: string = core.getInput("copybara_image_tag");
-  const createRepo: boolean = core.getInput("create_repo") == "true" ? true : false;
+  const createRepo: boolean = core.getInput("create_repo") == "yes" ? true : false;
   const copybaraOptions: string[] = !core.getInput("copybara_options")
     ? []
-    : core
-        .getInput("copybara_options")
-        .replace(/\s*,\s*/, ",")
-        .split(",");
+    : core.getInput("copybara_options").split(" ");
   const includeFilesSot: string[] = !core.getInput("include_files_sot")
     ? []
     : core

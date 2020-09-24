@@ -6272,13 +6272,10 @@ function run() {
         const customConfig = core.getInput("custom_config");
         const copybaraImage = core.getInput("copybara_image");
         const copybaraImageTag = core.getInput("copybara_image_tag");
-        const createRepo = core.getInput("create_repo") == "true" ? true : false;
+        const createRepo = core.getInput("create_repo") == "yes" ? true : false;
         const copybaraOptions = !core.getInput("copybara_options")
             ? []
-            : core
-                .getInput("copybara_options")
-                .replace(/\s*,\s*/, ",")
-                .split(",");
+            : core.getInput("copybara_options").split(" ");
         const includeFilesSot = !core.getInput("include_files_sot")
             ? []
             : core

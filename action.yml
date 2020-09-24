@@ -6,16 +6,12 @@ inputs:
     description: "SSH public key."
     required: true
 
-  sot_repo:
-    description: "Source repository (source of truth)."
-    required: false
-
-  destination_repo:
-    description: "Destination repository."
-    required: false
-
   access_token:
-    description: "Personal access token."
+    description: "Personal access token with `repo` permissions. Always required on *destination* and required on *SoT* only if the variable `sot_branch` below is left empty."
+    required: false
+
+  sot_repo:
+    description: "Source repository (Source of Truth)."
     required: false
 
   sot_branch:
@@ -23,18 +19,17 @@ inputs:
     required: false
     default: ""
 
+  destination_repo:
+    description: "Destination repository."
+    required: false
+
   destination_branch:
     description: "Destination branch. Leave empty to use the same as your SoT's branch name."
     required: false
     default: ""
 
-  workflow:
-    description: "Workflow to execute. Leave empty to auto-detect (init / push / pr)."
-    required: false
-    default: ""
-
-  ssh_known_hosts:
-    description: "SSH known hosts file contents, for authenticating with Copybara"
+  make_root_path:
+    description: "Use a sub-path of the source repo as root for the destination repo."
     required: false
     default: ""
 
@@ -58,20 +53,35 @@ inputs:
     required: false
     default: ""
 
-  make_root_path:
-    description: "Use a sub-path of the source repo for the root path of the destination repo."
-    required: false
-    default: ""
-
   committer:
     description: "Who will commit changes."
     required: false
     default: Github Actions <actions@github.com>
 
   default_author:
-    description: "Default author if the original author can't passed through."
+    description: "Default author if the original author can't be used for some reason."
     required: false
     default: Github Actions <actions@github.com>
+
+  custom_config:
+    description: "Copybara configuration file to use."
+    required: false
+    default: ""
+
+  workflow:
+    description: "Workflow to execute. Leave empty to auto-detect (init / push / pr)."
+    required: false
+    default: ""
+
+  copybara_options:
+    description: "Use this, if you want to manually specify some command line options (space-separated)."
+    required: false
+    default: ""
+
+  ssh_known_hosts:
+    description: "SSH known hosts file contents, for authenticating with Copybara."
+    required: false
+    default: ""
 
   copybara_image:
     description: "Copybara Docker image to run."
@@ -83,11 +93,6 @@ inputs:
     required: false
     default: "latest"
 
-  custom_config:
-    description: "Copybara configuration file to use."
-    required: false
-    default: ""
-
   pr_number:
     description: "If you manually specified the 'pr' workflow, you will need to specify the PR number as well."
     required: false
@@ -96,12 +101,7 @@ inputs:
   create_repo:
     description: "If the destination repo doesn't exist, it will be created (subject to enough permissions attached to the access token)."
     required: false
-    default: "true"
-
-  copybara_options:
-    description: "Use this, if you want to manually specify some command line options."
-    required: false
-    default: ""
+    default: "yes"
 
 runs:
   using: "node12"
