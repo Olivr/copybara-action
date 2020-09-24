@@ -37,7 +37,7 @@ jobs:
           ssh_key: ${{ secrets.SSH_KEY }}
 ```
 
-### Custom Copybara config
+### Custom Copybara configuration
 
 The following will use your configuration instead of the automatically generated one.
 You can get inspiration from the [generated config](#generated-config) to get started.
@@ -62,7 +62,7 @@ jobs:
           ssh_key: ${{ secrets.SSH_KEY }}
 ```
 
-### Completely custom example
+### Completely custom
 
 The following doesn't make use of any of our helpers for detecting the workflow and generating the configuration.
 It is even using a custom Copybara docker image!
@@ -82,6 +82,25 @@ jobs:
           workflow: export
           custom_config: my.own.copy.bara.sky
           copybara_image: sharelatex/copybara
+          ssh_key: ${{ secrets.SSH_KEY }}
+```
+
+### SoT not on GitHub
+
+This action's auto-generated configuration was made for a use case with two GitHub repos. However
+If your SoT is not on GitHub, you can still use this action on your destination using a custom config and forcing a specific workflow:
+
+```yaml
+on:
+  pull_request_target:
+jobs:
+  move-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: olivr/copybara-action@v1.1.1
+        with:
+          workflow: pr
+          custom_config: my.own.copy.bara.sky
           ssh_key: ${{ secrets.SSH_KEY }}
 ```
 
