@@ -19,19 +19,19 @@ inputs:
     required: false
 
   sot_branch:
-    description: "SoT branch."
+    description: "SoT branch. Leave empty to use your repository's default branch."
     required: false
-    default: "" # Leave empty to use default branch
+    default: ""
 
   destination_branch:
-    description: "Destination branch."
+    description: "Destination branch. Leave empty to use the same as your SoT's branch name."
     required: false
-    default: "" # Leave empty to use the same as SoT's branch name
+    default: ""
 
   workflow:
-    description: "Workflow to execute."
+    description: "Workflow to execute. Leave empty to auto-detect (init / push / pr)."
     required: false
-    default: "" # Leave empty to auto-detect push or pr
+    default: ""
 
   ssh_known_hosts:
     description: "SSH known hosts file contents, for authenticating with Copybara"
