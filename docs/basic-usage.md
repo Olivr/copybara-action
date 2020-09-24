@@ -4,8 +4,6 @@ As per the [default flow](README.md#default-flow), Pull Requests **must be merge
 
 Once they are merged on SoT, Copybara will automatically push the code to the destination branch and close the Pull Request that was initially created on destination (if any).
 
-It is recommended to [protect the destination branch](branch-protection.md) to prevent accidental commits.
-
 ## Pre-requisite
 
 - **Source of Truth (SoT) repo**
