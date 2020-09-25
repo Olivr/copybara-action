@@ -2339,84 +2339,6 @@ module.exports = {
 
 /***/ }),
 
-/***/ 140:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.exitCodes = void 0;
-exports.exitCodes = {
-    0: {
-        msg: "Everything went well and the migration was successful.",
-        ns: "copybara",
-        type: "success",
-    },
-    1: {
-        msg: "Error parsing the command line. Check the logs for details.",
-        ns: "copybara",
-        type: "error",
-    },
-    2: {
-        msg: "Error in the configuration, flags values or in general an error attributable to the user. Check the logs for details.",
-        ns: "copybara",
-        type: "error",
-    },
-    3: {
-        msg: "Error during repository manipulation. Check the logs for details.",
-        ns: "copybara",
-        type: "error",
-    },
-    4: {
-        msg: "Execution resulted in no-op, which means that no changes were made in the destination.",
-        ns: "copybara",
-        type: "warning",
-    },
-    8: {
-        msg: "Execution was interrupted. Check the logs for details.",
-        ns: "copybara",
-        type: "error",
-    },
-    30: {
-        msg: "Error accessing the network, filesystem errors, etc. Check the logs for details.",
-        ns: "copybara",
-        type: "error",
-    },
-    31: {
-        msg: "Unexpected error. This would be a Copybara bug. Check the logs for details.",
-        ns: "copybara",
-        type: "error",
-    },
-    50: {
-        msg: "Action completed successfully.",
-        ns: "action",
-        type: "success",
-    },
-    51: {
-        msg: "Error with an input variable. Check the logs for details.",
-        ns: "action",
-        type: "error",
-    },
-    52: {
-        msg: "Unexpected error running Copybara. Please open an issue on olivr/copybara-action.",
-        ns: "action",
-        type: "error",
-    },
-    53: {
-        msg: "Unexpected error. Please open an issue on olivr/copybara-action.",
-        ns: "action",
-        type: "error",
-    },
-    54: {
-        msg: "Nothing to do.",
-        ns: "action",
-        type: "warning",
-    },
-};
-
-
-/***/ }),
-
 /***/ 159:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -6231,218 +6153,59 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const artifact = __importStar(__webpack_require__(605));
 const core = __importStar(__webpack_require__(186));
-const path_1 = __importDefault(__webpack_require__(622));
-const github_1 = __webpack_require__(438);
-const copybara_1 = __webpack_require__(529);
-const exitCodes_1 = __webpack_require__(140);
-const github_2 = __webpack_require__(978);
-const os_1 = __webpack_require__(87);
-const hostConfig_1 = __webpack_require__(452);
-const fs_extra_1 = __webpack_require__(967);
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Format inputs
-        const sshKey = core.getInput("ssh_key", { required: true });
-        const sotRepo = core.getInput("sot_repo");
-        const destinationRepo = core.getInput("destination_repo");
-        const accessToken = core.getInput("access_token");
-        let sotBranch = core.getInput("sot_branch");
-        let destinationBranch = core.getInput("destination_branch");
-        let workflow = core.getInput("workflow");
-        let prNumber = core.getInput("pr_number");
-        const knownHosts = core.getInput("ssh_known_hosts");
-        const makeRootPath = core.getInput("make_root_path");
-        const committer = core.getInput("committer");
-        const defaultAuthor = core.getInput("default_author");
-        const customConfig = core.getInput("custom_config");
-        const copybaraImage = core.getInput("copybara_image");
-        const copybaraImageTag = core.getInput("copybara_image_tag");
-        const createRepo = core.getInput("create_repo") == "yes" ? true : false;
-        const copybaraOptions = !core.getInput("copybara_options")
-            ? []
-            : core.getInput("copybara_options").split(" ");
-        const includeFilesSot = !core.getInput("include_files_sot")
-            ? []
-            : core
-                .getInput("include_files_sot")
-                .replace(/\s*,\s*/, ",")
-                .split(",");
-        const excludeFilesSot = !core.getInput("exclude_files_sot")
-            ? []
-            : core
-                .getInput("exclude_files_sot")
-                .replace(/\s*,\s*/, ",")
-                .split(",");
-        const includeFilesDest = !core.getInput("include_files_dest")
-            ? []
-            : core
-                .getInput("include_files_dest")
-                .replace(/\s*,\s*/, ",")
-                .split(",");
-        const excludeFilesDest = !core.getInput("exclude_files_dest")
-            ? []
-            : core
-                .getInput("exclude_files_dest")
-                .replace(/\s*,\s*/, ",")
-                .split(",");
-        // Detect workflow if none specified
-        if (!workflow) {
-            core.debug("Detect workflow");
-            if (!sotRepo || !destinationRepo)
-                exit(51, 'You need to set values for "sot_repo" & "destination_repo" or set a value for "workflow".');
-            // Detect current repo
-            const currentRepo = `${github_1.context.repo.owner}/${github_1.context.repo.repo}`;
-            core.debug(`  Current repo is ${currentRepo}`);
-            // Detect current branch
-            const currentBranch = github_1.context.ref.replace(/^refs\/heads\//, "");
-            core.debug(`  Current branch is ${currentBranch}`);
-            // Detect if current repo is SoT or destination
-            if (currentRepo == destinationRepo) {
-                if (!github_1.context.payload.pull_request)
-                    exit(54, "Nothing to do in the destination repo except for Pull Requests.");
-                else
-                    workflow = "pr";
-            }
-            else if (currentRepo == sotRepo) {
-                if (github_1.context.eventName != "push")
-                    exit(54, "Nothing to do in the SoT repo except for push events.");
-                else {
-                    if (!accessToken)
-                        exit(51, 'You need to manually set the "workflow" value to "push" or "init" OR set a value for "access_token".');
-                    const gh = new github_2.GitHub(accessToken);
-                    // Detect SoT branch if none specified
-                    sotBranch = sotBranch ? sotBranch : yield gh.getDefaultBranch(sotRepo);
-                    if (currentBranch != sotBranch)
-                        exit(54, `Nothing to do in the SoT repo except on the "${sotBranch}" branch.`);
-                    // Determine destination branch if none specified
-                    destinationBranch = destinationBranch ? destinationBranch : sotBranch;
-                    workflow = (yield gh.branchExists(destinationRepo, destinationBranch, createRepo)) ? "push" : "init";
-                }
-                core.debug(`Workflow is ${workflow}`);
-            }
-            else
-                exit(51, 'This repo is neither the SoT nor destination repo. Therefore, this action cannot detect the Copybara workflow to run. You need to set a value for "workflow" or run this action in the SoT or destination repo.');
-        }
-        // Detect PR number if none specified
-        if (workflow == "pr" && !prNumber) {
-            core.debug("Detect Pull Request number");
-            if (github_1.context.payload.pull_request) {
-                prNumber = github_1.context.payload.pull_request.number;
-                core.debug(`Pull Request number is ${prNumber}`);
-            }
-            else
-                exit(53, "Cannot detect which pull request to use, please specify a PR number manually.");
-        }
-        // Load Copybara configuration
-        let config = "";
-        if (!customConfig) {
-            // Build copybara config if none was specified
-            core.debug("Build Copybara config");
-            if (!sotRepo || !destinationRepo)
-                exit(51, 'You need to set values for "sot_repo" & "destination_repo" or set a value for "custom_config".');
-            if (!sotBranch && !accessToken)
-                exit(51, 'You need to set a value for "sot_branch" or "access_token".');
-            if (!committer)
-                exit(51, 'You need to set a value for "committer".');
-            if (!defaultAuthor)
-                exit(51, 'You need to set a value for "default_author".');
-            if (!copybaraImage)
-                exit(51, 'You need to set a value for "copybara_image".');
-            if (!copybaraImageTag)
-                exit(51, 'You need to set a value for "copybara_image_tag".');
-            if (!includeFilesSot.length)
-                exit(51, 'You need to set a value for "include_files_sot".');
-            if (!includeFilesDest.length)
-                exit(51, 'You need to set a value for "include_files_dest".');
-            // Detect SoT branch if none specified
-            if (!sotBranch) {
-                const gh = new github_2.GitHub(accessToken);
-                sotBranch = yield gh.getDefaultBranch(sotRepo);
-            }
-            // Determine destination branch if none specified
-            destinationBranch = destinationBranch ? destinationBranch : sotBranch;
-            config = copybara_1.CopyBara.getConfig(workflow, {
-                // Required
-                sotRepo,
-                destinationRepo,
-                sotBranch,
-                destinationBranch,
-                committer,
-                defaultAuthor,
-                copybaraImage,
-                includeFilesSot,
-                // Optional
-                excludeFilesSot,
-                includeFilesDest,
-                excludeFilesDest,
-                makeRootPath,
-                prNumber,
-            });
-        }
-        else {
-            // Load custom config if it was specified
-            const configFile = path_1.default.join(process.cwd(), customConfig);
-            core.debug(`Load custom Copybara config from ${configFile}`);
-            if (!fs_extra_1.pathExists(configFile))
-                exit(51, `Cannot find the config file ${configFile}`);
-            config = fs_extra_1.readFileSync(configFile, "utf8");
-        }
-        // Save various configuration files
-        core.debug("Save config files");
-        yield hostConfig_1.hostConfig.saveSshKey(sshKey);
-        yield hostConfig_1.hostConfig.saveAccessToken(accessToken);
-        yield hostConfig_1.hostConfig.saveCommitter(committer);
-        yield hostConfig_1.hostConfig.saveKnownHosts(knownHosts);
-        yield hostConfig_1.hostConfig.saveCopybaraConfig(config);
-        // Upload Copybara config as an artifact
-        if (core.isDebug()) {
-            const artifactClient = artifact.create();
-            artifactClient.uploadArtifact("copy.bara.sky", [hostConfig_1.hostConfig.cbConfigPath], os_1.homedir());
-        }
-        // Download Copybara image
-        core.debug(`Download Copybara from ${copybaraImage}:${copybaraImageTag}`);
-        const cb = new copybara_1.CopyBara(copybaraImage, copybaraImageTag);
-        yield cb.download();
-        // Run Copybara
-        core.debug("Run Copybara");
-        cb.run(workflow, copybaraOptions, prNumber).then(exit).catch(exit);
-    });
+const copybaraAction_1 = __webpack_require__(675);
+const exit_1 = __webpack_require__(633);
+const action = new copybaraAction_1.CopybaraAction({
+    // Credentials
+    sshKey: core.getInput("ssh_key", { required: true }),
+    accessToken: core.getInput("access_token"),
+    // Common config
+    sot: {
+        repo: core.getInput("sot_repo"),
+        branch: core.getInput("sot_branch"),
+    },
+    destination: {
+        repo: core.getInput("destination_repo"),
+        branch: core.getInput("destination_branch"),
+    },
+    makeRoot: core.getInput("make_root"),
+    committer: core.getInput("committer"),
+    // Push config
+    push: {
+        include: core.getInput("push_include_files").split(" "),
+        exclude: core.getInput("push_exclude_files").split(" "),
+        move: core.getInput("push_move_files").split(" "),
+        replace: core.getInput("push_replace").split(" "),
+    },
+    // PR config
+    pr: {
+        include: core.getInput("pr_include_files").split(" "),
+        exclude: core.getInput("pr_exclude_files").split(" "),
+        move: core.getInput("pr_move_files").split(" "),
+        replace: core.getInput("pr_replace").split(" "),
+    },
+    // Advanced config
+    customConfig: core.getInput("custom_config"),
+    workflow: core.getInput("workflow"),
+    copybaraOptions: core.getInput("copybara_options").split(" "),
+    knownHosts: core.getInput("ssh_known_hosts"),
+    prNumber: core.getInput("pr_number"),
+    createRepo: core.getInput("create_repo") == "yes" ? true : false,
+    // Docker
+    image: {
+        name: core.getInput("copybara_image"),
+        tag: core.getInput("copybara_image_tag"),
+    },
+});
+if (!core.isDebug()) {
+    // Action fails gracefully on 'throw'
+    process.on("unhandledRejection", (err) => exit_1.exit(53, err));
+    action.run().then(exit_1.exit).catch(exit_1.exit);
 }
-// Action fails on 'throw'
-process.on("unhandledRejection", (err) => exit(53, err));
-// Exit action
-function exit(exitCode, message = "") {
-    const ec = Object.prototype.hasOwnProperty.call(exitCodes_1.exitCodes, exitCode) ? exitCodes_1.exitCodes[exitCode] : exitCodes_1.exitCodes[53];
-    const msg = `[${ec.ns}] ${exitCode}: ${message ? message : ec.msg}`;
-    core.setOutput("msg", msg);
-    switch (ec.type) {
-        case "success":
-            core.info(msg);
-            process.exit(0); // eslint-disable-line no-process-exit
-        case "warning":
-            core.warning(msg);
-            process.exit(0); // eslint-disable-line no-process-exit
-        default:
-            core.setFailed(msg);
-            process.exit(1); // eslint-disable-line no-process-exit
-    }
-}
-run();
+else
+    action.run().then(exit_1.exit);
 
 
 /***/ }),
@@ -10029,14 +9792,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CopyBara = void 0;
 const exec_1 = __webpack_require__(514);
-const exitCodes_1 = __webpack_require__(140);
+const exit_1 = __webpack_require__(633);
 const hostConfig_1 = __webpack_require__(452);
 class CopyBara {
-    constructor(image, imageTag) {
+    constructor(image) {
         this.image = image;
-        this.imageTag = imageTag;
+    }
+    static validateConfig(config, workflow) {
+        if (!config.committer)
+            throw 'You need to set a value for "committer".';
+        if (!config.image.name)
+            throw 'You need to set a value for "copybara_image".';
+        if (!config.image.tag)
+            throw 'You need to set a value for "copybara_image_tag".';
+        if (workflow == "push" && !config.push.include.length)
+            throw 'You need to set a value for "push_include_files".';
+        if (workflow == "pr" && !config.pr.include.length)
+            throw 'You need to set a value for "pr_include_files".';
+        if (!config.sot.repo || !config.destination.repo)
+            throw 'You need to set values for "sot_repo" & "destination_repo" or set a value for "custom_config".';
     }
     static getConfig(workflow, config) {
+        this.validateConfig(config, workflow);
         switch (workflow) {
             case "init":
                 return this.pushConfig(config);
@@ -10050,7 +9827,7 @@ class CopyBara {
     }
     download() {
         return __awaiter(this, void 0, void 0, function* () {
-            return exec_1.exec(`docker pull ${this.image}:${this.imageTag}`);
+            return exec_1.exec("docker", ["pull", `${this.image.name}:${this.image.tag}`]);
         });
     }
     run(workflow, copybaraOptions, ref = "") {
@@ -10086,13 +9863,13 @@ class CopyBara {
                 `COPYBARA_CONFIG=/root/copy.bara.sky`,
                 ...dockerParams,
                 ...cbOptions,
-                this.image,
+                this.image.name,
                 "copybara",
             ], {
                 ignoreReturnCode: true,
                 env: { COPYBARA_OPTIONS: copybaraOptions.join(" ") },
             });
-            const exitCode = exitCodes_1.exitCodes[execExitCode];
+            const exitCode = exit_1.exitCodes[execExitCode];
             if (exitCode && exitCode.ns == "copybara") {
                 // success/warning
                 if (exitCode.type == "success" || exitCode.type == "warning")
@@ -10105,17 +9882,14 @@ class CopyBara {
                 throw 52;
         });
     }
-    static changeGlobsRoots(rootPath, globs) {
-        return globs.map((glob) => glob.replace(/^\/?/, `${rootPath}/`));
-    }
     static pushConfig(config) {
         let move = "";
-        let includeGlobs = config.includeFilesSot || [];
-        let excludeGlobs = config.excludeFilesSot || [];
-        if (config.makeRootPath) {
-            move = `core.move("${config.makeRootPath}", ""),`;
-            includeGlobs = this.changeGlobsRoots(config.makeRootPath, includeGlobs);
-            excludeGlobs = this.changeGlobsRoots(config.makeRootPath, excludeGlobs);
+        let includeGlobs = config.push.include;
+        let excludeGlobs = config.push.exclude;
+        if (config.makeRoot) {
+            move = `core.move("${config.makeRoot}", ""),`;
+            includeGlobs = includeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
+            excludeGlobs = excludeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
         }
         const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
         return `
@@ -10123,14 +9897,14 @@ core.workflow(
     name = "push",
     origin = git.origin(
         url = "file:///usr/src/app",
-        ref = "${config.sotBranch}",
+        ref = "${config.sot.branch}",
     ),
     destination = git.github_destination(
-        url = "git@github.com:${config.destinationRepo}.git",
-        push = "${config.destinationBranch}",
+        url = "git@github.com:${config.destination.repo}.git",
+        push = "${config.destination.branch}",
     ),
     origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
-    authoring = authoring.pass_thru(default = "${config.defaultAuthor}"),
+    authoring = authoring.pass_thru(default = "${config.committer}"),
     mode = "ITERATIVE",
     transformations = [
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
@@ -10140,32 +9914,29 @@ core.workflow(
 )`;
     }
     static prConfig(config) {
-        let move = "";
-        const includeGlobs = config.excludeFilesDest || [];
-        const excludeGlobs = config.excludeFilesDest || [];
-        if (config.makeRootPath) {
-            move = `core.move("", "${config.makeRootPath}"),`;
-        }
+        const move = config.makeRoot ? `core.move("", "${config.makeRoot}"),` : "";
+        const includeGlobs = config.pr.include;
+        const excludeGlobs = config.pr.exclude;
         const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
         return `
 core.workflow(
     name = "pr",
     origin = git.github_pr_origin(
-        url = "git@github.com:${config.destinationRepo}.git",
-        branch = "${config.destinationBranch}",
+        url = "git@github.com:${config.destination.repo}.git",
+        branch = "${config.destination.branch}",
     ),
     destination = git.github_pr_destination(
-        url = "git@github.com:${config.sotRepo}.git",
-        destination_ref = "${config.sotBranch}",
+        url = "git@github.com:${config.sot.repo}.git",
+        destination_ref = "${config.sot.branch}",
         integrates = [],
     ),
     origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
-    authoring = authoring.pass_thru(default = "${config.defaultAuthor}"),
+    authoring = authoring.pass_thru(default = "${config.committer}"),
     mode = "CHANGE_REQUEST",
     set_rev_id = False,
     transformations = [
         metadata.save_author("ORIGINAL_AUTHOR"),
-        metadata.expose_label("GITHUB_PR_NUMBER", new_name ="Closes", separator=" ${config.destinationRepo}#"),
+        metadata.expose_label("GITHUB_PR_NUMBER", new_name ="Closes", separator=" ${config.destination.repo}#"),
         ${move}
     ],
 )`;
@@ -11109,6 +10880,122 @@ module.exports = require("net");
 
 /***/ }),
 
+/***/ 633:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.exit = exports.exitCodes = void 0;
+const core = __importStar(__webpack_require__(186));
+exports.exitCodes = {
+    0: {
+        msg: "Everything went well and the migration was successful.",
+        ns: "copybara",
+        type: "success",
+    },
+    1: {
+        msg: "Error parsing the command line. Check the logs for details.",
+        ns: "copybara",
+        type: "error",
+    },
+    2: {
+        msg: "Error in the configuration, flags values or in general an error attributable to the user. Check the logs for details.",
+        ns: "copybara",
+        type: "error",
+    },
+    3: {
+        msg: "Error during repository manipulation. Check the logs for details.",
+        ns: "copybara",
+        type: "error",
+    },
+    4: {
+        msg: "Execution resulted in no-op, which means that no changes were made in the destination.",
+        ns: "copybara",
+        type: "warning",
+    },
+    8: {
+        msg: "Execution was interrupted. Check the logs for details.",
+        ns: "copybara",
+        type: "error",
+    },
+    30: {
+        msg: "Error accessing the network, filesystem errors, etc. Check the logs for details.",
+        ns: "copybara",
+        type: "error",
+    },
+    31: {
+        msg: "Unexpected error. This would be a Copybara bug. Check the logs for details.",
+        ns: "copybara",
+        type: "error",
+    },
+    50: {
+        msg: "Action completed successfully.",
+        ns: "action",
+        type: "success",
+    },
+    51: {
+        msg: "Error with an input variable. Check the logs for details.",
+        ns: "action",
+        type: "error",
+    },
+    52: {
+        msg: "Unexpected error running Copybara. Please open an issue on olivr/copybara-action.",
+        ns: "action",
+        type: "error",
+    },
+    53: {
+        msg: "Unexpected error. Please open an issue on olivr/copybara-action.",
+        ns: "action",
+        type: "error",
+    },
+    54: {
+        msg: "Nothing to do.",
+        ns: "action",
+        type: "warning",
+    },
+};
+// Exit action
+function exit(exitCode, message = "") {
+    const ec = Object.prototype.hasOwnProperty.call(exports.exitCodes, exitCode) ? exports.exitCodes[exitCode] : exports.exitCodes[53];
+    const msg = `[${ec.ns}] ${exitCode}: ${message ? message : ec.msg}`;
+    core.setOutput("msg", msg);
+    switch (ec.type) {
+        case "success":
+            core.info(msg);
+            process.exit(0); // eslint-disable-line no-process-exit
+        case "warning":
+            core.warning(msg);
+            process.exit(0); // eslint-disable-line no-process-exit
+        default:
+            core.setFailed(msg);
+            process.exit(1); // eslint-disable-line no-process-exit
+    }
+}
+exports.exit = exit;
+
+
+/***/ }),
+
 /***/ 665:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -11276,6 +11163,186 @@ function register (state, name, method, options) {
       }, method)()
     })
 }
+
+
+/***/ }),
+
+/***/ 675:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CopybaraAction = void 0;
+const artifact = __importStar(__webpack_require__(605));
+const core = __importStar(__webpack_require__(186));
+const path_1 = __importDefault(__webpack_require__(622));
+const github_1 = __webpack_require__(438);
+const copybara_1 = __webpack_require__(529);
+const exit_1 = __webpack_require__(633);
+const github_2 = __webpack_require__(978);
+const os_1 = __webpack_require__(87);
+const hostConfig_1 = __webpack_require__(452);
+const fs_extra_1 = __webpack_require__(967);
+class CopybaraAction {
+    constructor(config) {
+        this.config = config;
+        this.current = { repo: "", branch: "" };
+    }
+    getCurrentRepo() {
+        if (!this.current.repo)
+            this.current.repo = `${github_1.context.repo.owner}/${github_1.context.repo.repo}`;
+        core.debug(`Current repo is ${this.current.repo}`);
+        return this.current.repo;
+    }
+    getCurrentBranch() {
+        if (!this.current.branch)
+            this.current.branch = github_1.context.ref.replace(/^refs\/heads\//, "");
+        core.debug(`Current branch is ${this.current.branch}`);
+        return this.current.branch;
+    }
+    getGitHubClient() {
+        if (!this.gh) {
+            if (!this.config.accessToken)
+                throw "You need to specify an access_token";
+            else
+                this.gh = new github_2.GitHub(this.config.accessToken);
+        }
+        return this.gh;
+    }
+    getSotBranch() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.config.sot.branch) {
+                if (!this.config.sot.branch && !this.config.accessToken)
+                    throw 'You need to set a value for "sot_branch" or "access_token".';
+                this.config.sot.branch = yield this.getGitHubClient().getDefaultBranch(this.config.sot.repo);
+            }
+            core.debug(`SoT branch is ${this.config.sot.branch}`);
+            return this.config.sot.branch;
+        });
+    }
+    getDestinationBranch() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.config.destination.branch)
+                this.config.destination.branch = yield this.getSotBranch();
+            core.debug(`Destination branch is ${this.config.destination.branch}`);
+            return this.config.destination.branch;
+        });
+    }
+    getPRNumber() {
+        // This might return an empty string
+        if (!this.config.prNumber && github_1.context.payload.pull_request && github_1.context.payload.pull_request.number)
+            this.config.prNumber = github_1.context.payload.pull_request.number;
+        core.debug(`Current PR number is ${this.config.prNumber}`);
+        return this.config.prNumber;
+    }
+    getWorkflow() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.config.workflow) {
+                core.debug("Detect workflow");
+                if (!this.config.sot.repo || !this.config.destination.repo)
+                    exit_1.exit(51, 'You need to set values for "sot_repo" & "destination_repo" or set a value for "workflow".');
+                if (this.getCurrentRepo() === this.config.sot.repo) {
+                    if (github_1.context.eventName != "push")
+                        exit_1.exit(54, "Nothing to do in the SoT repo except for push events.");
+                    const sotBranch = yield this.getSotBranch();
+                    if (this.getCurrentBranch() != sotBranch)
+                        exit_1.exit(54, `Nothing to do in the SoT repo except on the "${sotBranch}" branch.`);
+                    this.config.workflow = (yield this.isInitWorkflow()) ? "init" : "push";
+                }
+                else if (this.getCurrentRepo() === this.config.destination.repo) {
+                    if (!this.getPRNumber())
+                        exit_1.exit(54, "Nothing to do in the destination repo except for processing Pull Requests.");
+                    this.config.workflow = "pr";
+                }
+                else
+                    exit_1.exit(51, 'The current repo is neither the SoT nor destination repo. You need to set a value for "workflow" or run this action in the SoT or destination repo.');
+            }
+            core.debug(`Workflow is ${this.config.workflow}`);
+            return this.config.workflow;
+        });
+    }
+    isInitWorkflow() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.config.accessToken)
+                exit_1.exit(51, 'You need to manually set the "workflow" value to "push" or "init" OR set a value for "access_token".');
+            return !this.getGitHubClient().branchExists(this.config.destination.repo, yield this.getDestinationBranch(), this.config.createRepo);
+        });
+    }
+    getCopybaraConfig() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.cbConfig) {
+                if (this.config.customConfig) {
+                    const configFile = path_1.default.join(process.cwd(), this.config.customConfig);
+                    if (!fs_extra_1.pathExists(configFile))
+                        exit_1.exit(51, `Cannot find the config file ${configFile}`);
+                    core.debug(`Load custom Copybara config from ${configFile}`);
+                    this.cbConfig = fs_extra_1.readFileSync(configFile, "utf8");
+                }
+                else
+                    this.cbConfig = copybara_1.CopyBara.getConfig(yield this.getWorkflow(), this.config);
+            }
+            return this.cbConfig;
+        });
+    }
+    saveConfigFiles() {
+        return __awaiter(this, void 0, void 0, function* () {
+            core.debug("Save config files");
+            yield hostConfig_1.hostConfig.saveSshKey(this.config.sshKey);
+            yield hostConfig_1.hostConfig.saveAccessToken(this.config.accessToken);
+            yield hostConfig_1.hostConfig.saveCommitter(this.config.committer);
+            yield hostConfig_1.hostConfig.saveKnownHosts(this.config.knownHosts);
+            yield hostConfig_1.hostConfig.saveCopybaraConfig(yield this.getCopybaraConfig());
+            // Upload Copybara config as an artifact
+            if (core.isDebug()) {
+                const artifactClient = artifact.create();
+                artifactClient.uploadArtifact("copy.bara.sky", [hostConfig_1.hostConfig.cbConfigPath], os_1.homedir());
+            }
+        });
+    }
+    run() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.saveConfigFiles();
+            core.debug(`Download Copybara from ${this.config.image.name}:${this.config.image.tag}`);
+            const cb = new copybara_1.CopyBara(this.config.image);
+            yield cb.download();
+            core.debug("Run Copybara");
+            return cb.run(yield this.getWorkflow(), this.config.copybaraOptions, this.getPRNumber());
+        });
+    }
+}
+exports.CopybaraAction = CopybaraAction;
 
 
 /***/ }),

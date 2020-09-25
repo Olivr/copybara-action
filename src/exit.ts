@@ -1,3 +1,5 @@
+import * as core from "@actions/core";
+
 export const exitCodes: {
   [k: number]: ExitCode;
 } = {
@@ -74,3 +76,25 @@ type ExitCode = {
   ns: "copybara" | "action";
   msg: string;
 };
+
+// Exit action
+export function exit(exitCode: number, message = "") {
+  const ec = Object.prototype.hasOwnProperty.call(exitCodes, exitCode) ? exitCodes[exitCode] : exitCodes[53];
+
+  const msg = `[${ec.ns}] ${exitCode}: ${message ? message : ec.msg}`;
+  core.setOutput("msg", msg);
+
+  switch (ec.type) {
+    case "success":
+      core.info(msg);
+      process.exit(0); // eslint-disable-line no-process-exit
+
+    case "warning":
+      core.warning(msg);
+      process.exit(0); // eslint-disable-line no-process-exit
+
+    default:
+      core.setFailed(msg);
+      process.exit(1); // eslint-disable-line no-process-exit
+  }
+}

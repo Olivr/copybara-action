@@ -28,38 +28,53 @@ inputs:
     required: false
     default: ""
 
-  make_root_path:
+  make_root:
     description: "Use a sub-path of the source repo as root for the destination repo."
     required: false
     default: ""
 
-  include_files_sot:
-    description: "Files to include when pushing from SoT => Destination (comma separated globs)."
+  push_include_files:
+    description: "Files to include when pushing from SoT => Destination (space separated globs). Defaults to all files."
     required: false
     default: "**"
 
-  exclude_files_sot:
-    description: "Files to exclude when pushing from SoT => Destination (comma separated globs)."
+  push_exclude_files:
+    description: "Files to exclude when pushing from SoT => Destination (space separated globs). Defaults to none."
     required: false
     default: ""
 
-  include_files_dest:
-    description: "Files to include when pulling from Destination => SoT (comma separated globs)."
+  push_move_files:
+    description: "Files to move before pushing from SoT => Destination. In the format `from,to` and separate each move operation by a space. Defaults to none."
+    required: false
+    default: ""
+
+  push_replace:
+    description: "Files to move before pushing from SoT => Destination. In the format `search,replace` and separate each replacement operation by a space. Defaults to none. This is a very basic implementation, there is a limitation that you can't use spaces or comas in your search/replace, if you want to do so, you have to use your own Copybara config file."
+    required: false
+    default: ""
+
+  pr_include_files:
+    description: "Files to include when pulling from Destination => SoT (space separated globs). Defaults to all files."
     required: false
     default: "**"
 
-  exclude_files_dest:
-    description: "Files to exclude when pulling from Destination => SoT (comma separated globs)."
+  pr_exclude_files:
+    description: "Files to exclude when pulling from Destination => SoT (space separated globs). Defaults to none."
+    required: false
+    default: ""
+
+  pr_move_files:
+    description: "Files to move before pulling from Destination => SoT. In the format `from,to` and separate each move operation by a space. Defaults to none."
+    required: false
+    default: ""
+
+  pr_replace:
+    description: "Files to move before pulling from Destination => SoT. In the format `search,replace` and separate each replacement operation by a space. Defaults to none. This is a very basic implementation, there is a limitation that you can't use spaces or comas in your search/replace, if you want to do so, you have to use your own Copybara config file."
     required: false
     default: ""
 
   committer:
     description: "Who will commit changes."
-    required: false
-    default: Github Actions <actions@github.com>
-
-  default_author:
-    description: "Default author if the original author can't be used for some reason."
     required: false
     default: Github Actions <actions@github.com>
 
