@@ -23,16 +23,16 @@ const action = new CopybaraAction({
   push: {
     include: core.getInput("push_include_files").split(" "),
     exclude: core.getInput("push_exclude_files").split(" "),
-    move: core.getInput("push_move_files").split(" "),
-    replace: core.getInput("push_replace").split(" "),
+    move: core.getInput("push_move_files").split(/\r?\n/),
+    replace: core.getInput("push_replace").split(/\r?\n/),
   },
 
   // PR config
   pr: {
     include: core.getInput("pr_include_files").split(" "),
     exclude: core.getInput("pr_exclude_files").split(" "),
-    move: core.getInput("pr_move_files").split(" "),
-    replace: core.getInput("pr_replace").split(" "),
+    move: core.getInput("pr_move_files").split(/\r?\n/),
+    replace: core.getInput("pr_replace").split(/\r?\n/),
   },
 
   // Advanced config
@@ -54,4 +54,7 @@ if (!core.isDebug()) {
   // Action fails gracefully on 'throw'
   process.on("unhandledRejection", (err) => exit(53, err as string));
   action.run().then(exit).catch(exit);
-} else action.run().then(exit);
+} else {
+  core.debug("BEWARE: Debug mode is on, this could result in this action succeeding while it didn't. Check the logs.");
+  action.run().then(exit);
+}

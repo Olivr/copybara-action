@@ -6176,15 +6176,15 @@ const action = new copybaraAction_1.CopybaraAction({
     push: {
         include: core.getInput("push_include_files").split(" "),
         exclude: core.getInput("push_exclude_files").split(" "),
-        move: core.getInput("push_move_files").split(" "),
-        replace: core.getInput("push_replace").split(" "),
+        move: core.getInput("push_move_files").split(/\r?\n/),
+        replace: core.getInput("push_replace").split(/\r?\n/),
     },
     // PR config
     pr: {
         include: core.getInput("pr_include_files").split(" "),
         exclude: core.getInput("pr_exclude_files").split(" "),
-        move: core.getInput("pr_move_files").split(" "),
-        replace: core.getInput("pr_replace").split(" "),
+        move: core.getInput("pr_move_files").split(/\r?\n/),
+        replace: core.getInput("pr_replace").split(/\r?\n/),
     },
     // Advanced config
     customConfig: core.getInput("custom_config"),
@@ -6204,8 +6204,10 @@ if (!core.isDebug()) {
     process.on("unhandledRejection", (err) => exit_1.exit(53, err));
     action.run().then(exit_1.exit).catch(exit_1.exit);
 }
-else
+else {
+    core.debug("BEWARE: Debug mode is on, this could result in this action succeeding while it didn't. Check the logs.");
     action.run().then(exit_1.exit);
+}
 
 
 /***/ }),
@@ -9834,11 +9836,11 @@ class CopyBara {
         return __awaiter(this, void 0, void 0, function* () {
             switch (workflow) {
                 case "init":
-                    return this.exec(["-e", "COPYBARA_WORKFLOW=push"], ["--force", "--init-history", ...copybaraOptions]);
+                    return this.exec(["-e", "COPYBARA_WORKFLOW=push"], ["--force", "--init-history", "--ignore-noop", ...copybaraOptions]);
                 case "pr":
-                    return this.exec(["-e", "COPYBARA_WORKFLOW=pr", "-e", `COPYBARA_SOURCEREF=${ref}`], copybaraOptions);
+                    return this.exec(["-e", "COPYBARA_WORKFLOW=pr", "-e", `COPYBARA_SOURCEREF=${ref}`], ["--ignore-noop", ...copybaraOptions]);
                 default:
-                    return this.exec(["-e", `COPYBARA_WORKFLOW=${workflow}`], copybaraOptions);
+                    return this.exec(["-e", `COPYBARA_WORKFLOW=${workflow}`], ["--ignore-noop", ...copybaraOptions]);
             }
         });
     }
@@ -9882,16 +9884,29 @@ class CopyBara {
                 throw 52;
         });
     }
+    static transformer(list, method) {
+        let transformation = "";
+        if (list.length) {
+            list.forEach((item) => {
+                const [from, to = "", path] = item.split("||");
+                const glob = path ? path : "**";
+                transformation = transformation.concat(`
+        core.${method}("${from}", "${to}", paths = glob(["${glob}"])),`);
+            });
+        }
+        return transformation;
+    }
     static pushConfig(config) {
-        let move = "";
         let includeGlobs = config.push.include;
         let excludeGlobs = config.push.exclude;
         if (config.makeRoot) {
-            move = `core.move("${config.makeRoot}", ""),`;
+            config.push.move.push(config.makeRoot);
             includeGlobs = includeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
             excludeGlobs = excludeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
         }
-        const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
+        const includes = `"${includeGlobs.join('","')}"`;
+        const excludes = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('","')}"]` : "";
+        const transformations = this.transformer(config.push.move, "move").concat(this.transformer(config.push.replace, "replace"));
         return `
 core.workflow(
     name = "push",
@@ -9903,21 +9918,24 @@ core.workflow(
         url = "git@github.com:${config.destination.repo}.git",
         push = "${config.destination.branch}",
     ),
-    origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
+    origin_files = glob([${includes}]${excludes}),
     authoring = authoring.pass_thru(default = "${config.committer}"),
     mode = "ITERATIVE",
     transformations = [
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
         metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
-        ${move}
+${transformations}
     ],
 )`;
     }
     static prConfig(config) {
-        const move = config.makeRoot ? `core.move("", "${config.makeRoot}"),` : "";
+        if (config.makeRoot)
+            config.pr.move.push(`||${config.makeRoot}`);
         const includeGlobs = config.pr.include;
         const excludeGlobs = config.pr.exclude;
-        const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
+        const includes = `"${includeGlobs.join('","')}"`;
+        const excludes = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('","')}"]` : "";
+        const transformations = this.transformer(config.pr.replace, "replace").concat(this.transformer(config.pr.move, "move"));
         return `
 core.workflow(
     name = "pr",
@@ -9930,14 +9948,14 @@ core.workflow(
         destination_ref = "${config.sot.branch}",
         integrates = [],
     ),
-    origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
+    origin_files = glob([${includes}]${excludes}),
     authoring = authoring.pass_thru(default = "${config.committer}"),
     mode = "CHANGE_REQUEST",
     set_rev_id = False,
     transformations = [
         metadata.save_author("ORIGINAL_AUTHOR"),
         metadata.expose_label("GITHUB_PR_NUMBER", new_name ="Closes", separator=" ${config.destination.repo}#"),
-        ${move}
+${transformations}
     ],
 )`;
     }
@@ -11227,8 +11245,10 @@ class CopybaraAction {
         return this.current.repo;
     }
     getCurrentBranch() {
-        if (!this.current.branch)
-            this.current.branch = github_1.context.ref.replace(/^refs\/heads\//, "");
+        if (!this.current.branch) {
+            const ref = github_1.context.payload.base_ref || github_1.context.ref;
+            this.current.branch = ref.replace(/^refs\/heads\//, "");
+        }
         core.debug(`Current branch is ${this.current.branch}`);
         return this.current.branch;
     }
@@ -11283,7 +11303,10 @@ class CopybaraAction {
                 }
                 else if (this.getCurrentRepo() === this.config.destination.repo) {
                     if (!this.getPRNumber())
-                        exit_1.exit(54, "Nothing to do in the destination repo except for processing Pull Requests.");
+                        exit_1.exit(54, "Nothing to do in the destination repo except for Pull Requests.");
+                    const destinationBranch = yield this.getDestinationBranch();
+                    if (this.getCurrentBranch() != destinationBranch)
+                        exit_1.exit(54, `Nothing to do in the destination repo except for Pull Requests on '${destinationBranch}'.`);
                     this.config.workflow = "pr";
                 }
                 else
@@ -11295,9 +11318,10 @@ class CopybaraAction {
     }
     isInitWorkflow() {
         return __awaiter(this, void 0, void 0, function* () {
+            core.debug("Detect if init workflow");
             if (!this.config.accessToken)
                 exit_1.exit(51, 'You need to manually set the "workflow" value to "push" or "init" OR set a value for "access_token".');
-            return !this.getGitHubClient().branchExists(this.config.destination.repo, yield this.getDestinationBranch(), this.config.createRepo);
+            return !(yield this.getGitHubClient().branchExists(this.config.destination.repo, yield this.getDestinationBranch(), this.config.createRepo));
         });
     }
     getCopybaraConfig() {
