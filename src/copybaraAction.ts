@@ -23,7 +23,10 @@ export class CopybaraAction {
   }
 
   getCurrentBranch() {
-    if (!this.current.branch) this.current.branch = context.ref.replace(/^refs\/heads\//, "");
+    if (!this.current.branch) {
+      const ref = context.payload.base_ref || context.ref;
+      this.current.branch = ref.replace(/^refs\/heads\//, "");
+    }
     core.debug(`Current branch is ${this.current.branch}`);
     return this.current.branch;
   }
@@ -80,7 +83,12 @@ export class CopybaraAction {
 
         this.config.workflow = (await this.isInitWorkflow()) ? "init" : "push";
       } else if (this.getCurrentRepo() === this.config.destination.repo) {
-        if (!this.getPRNumber()) exit(54, "Nothing to do in the destination repo except for processing Pull Requests.");
+        if (!this.getPRNumber()) exit(54, "Nothing to do in the destination repo except for Pull Requests.");
+
+        const destinationBranch = await this.getDestinationBranch();
+        if (this.getCurrentBranch() != destinationBranch)
+          exit(54, `Nothing to do in the destination repo except for Pull Requests on '${destinationBranch}'.`);
+
         this.config.workflow = "pr";
       } else
         exit(
@@ -94,14 +102,16 @@ export class CopybaraAction {
   }
 
   async isInitWorkflow() {
+    core.debug("Detect if init workflow");
+
     if (!this.config.accessToken)
       exit(51, 'You need to manually set the "workflow" value to "push" or "init" OR set a value for "access_token".');
 
-    return !this.getGitHubClient().branchExists(
+    return !(await this.getGitHubClient().branchExists(
       this.config.destination.repo,
       await this.getDestinationBranch(),
       this.config.createRepo
-    );
+    ));
   }
 
   async getCopybaraConfig() {
