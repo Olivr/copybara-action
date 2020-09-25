@@ -1,11 +1,23 @@
 import { exec } from "@actions/exec";
-import { exitCodes } from "./exitCodes";
+import { exitCodes } from "./exit";
 import { hostConfig } from "./hostConfig";
 
 export class CopyBara {
-  constructor(readonly image: string, readonly imageTag: string) {}
+  constructor(readonly image: DockerConfig) {}
+
+  public static validateConfig(config: CopybaraConfig, workflow: string) {
+    if (!config.committer) throw 'You need to set a value for "committer".';
+    if (!config.image.name) throw 'You need to set a value for "copybara_image".';
+    if (!config.image.tag) throw 'You need to set a value for "copybara_image_tag".';
+    if (workflow == "push" && !config.push.include.length) throw 'You need to set a value for "push_include_files".';
+    if (workflow == "pr" && !config.pr.include.length) throw 'You need to set a value for "pr_include_files".';
+    if (!config.sot.repo || !config.destination.repo)
+      throw 'You need to set values for "sot_repo" & "destination_repo" or set a value for "custom_config".';
+  }
 
   public static getConfig(workflow: string, config: CopybaraConfig): string {
+    this.validateConfig(config, workflow);
+
     switch (workflow) {
       case "init":
         return this.pushConfig(config);
@@ -19,7 +31,7 @@ export class CopyBara {
   }
 
   public async download(): Promise<number> {
-    return exec(`docker pull ${this.image}:${this.imageTag}`);
+    return exec("docker", ["pull", `${this.image.name}:${this.image.tag}`]);
   }
 
   public async run(workflow: string, copybaraOptions: string[], ref: string | number = ""): Promise<number> {
@@ -58,7 +70,7 @@ export class CopyBara {
         `COPYBARA_CONFIG=/root/copy.bara.sky`,
         ...dockerParams,
         ...cbOptions,
-        this.image,
+        this.image.name,
         "copybara",
       ],
       {
@@ -78,20 +90,15 @@ export class CopyBara {
     else throw 52;
   }
 
-  private static changeGlobsRoots(rootPath: string, globs: string[]): string[] {
-    return globs.map((glob) => glob.replace(/^\/?/, `${rootPath}/`));
-  }
-
   private static pushConfig(config: CopybaraConfig): string {
     let move = "";
-    let includeGlobs = config.includeFilesSot || [];
-    let excludeGlobs = config.excludeFilesSot || [];
+    let includeGlobs = config.push.include;
+    let excludeGlobs = config.push.exclude;
 
-    if (config.makeRootPath) {
-      move = `core.move("${config.makeRootPath}", ""),`;
-
-      includeGlobs = this.changeGlobsRoots(config.makeRootPath, includeGlobs);
-      excludeGlobs = this.changeGlobsRoots(config.makeRootPath, excludeGlobs);
+    if (config.makeRoot) {
+      move = `core.move("${config.makeRoot}", ""),`;
+      includeGlobs = includeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
+      excludeGlobs = excludeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
     }
 
     const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
@@ -101,14 +108,14 @@ core.workflow(
     name = "push",
     origin = git.origin(
         url = "file:///usr/src/app",
-        ref = "${config.sotBranch}",
+        ref = "${config.sot.branch}",
     ),
     destination = git.github_destination(
-        url = "git@github.com:${config.destinationRepo}.git",
-        push = "${config.destinationBranch}",
+        url = "git@github.com:${config.destination.repo}.git",
+        push = "${config.destination.branch}",
     ),
     origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
-    authoring = authoring.pass_thru(default = "${config.defaultAuthor}"),
+    authoring = authoring.pass_thru(default = "${config.committer}"),
     mode = "ITERATIVE",
     transformations = [
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
@@ -119,56 +126,72 @@ core.workflow(
   }
 
   private static prConfig(config: CopybaraConfig): string {
-    let move = "";
-    const includeGlobs = config.excludeFilesDest || [];
-    const excludeGlobs = config.excludeFilesDest || [];
-
-    if (config.makeRootPath) {
-      move = `core.move("", "${config.makeRootPath}"),`;
-    }
-
+    const move = config.makeRoot ? `core.move("", "${config.makeRoot}"),` : "";
+    const includeGlobs = config.pr.include;
+    const excludeGlobs = config.pr.exclude;
     const exclude = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('",')}"]` : "";
 
     return `
 core.workflow(
     name = "pr",
     origin = git.github_pr_origin(
-        url = "git@github.com:${config.destinationRepo}.git",
-        branch = "${config.destinationBranch}",
+        url = "git@github.com:${config.destination.repo}.git",
+        branch = "${config.destination.branch}",
     ),
     destination = git.github_pr_destination(
-        url = "git@github.com:${config.sotRepo}.git",
-        destination_ref = "${config.sotBranch}",
+        url = "git@github.com:${config.sot.repo}.git",
+        destination_ref = "${config.sot.branch}",
         integrates = [],
     ),
     origin_files = glob(["${includeGlobs.join('",')}"]${exclude}),
-    authoring = authoring.pass_thru(default = "${config.defaultAuthor}"),
+    authoring = authoring.pass_thru(default = "${config.committer}"),
     mode = "CHANGE_REQUEST",
     set_rev_id = False,
     transformations = [
         metadata.save_author("ORIGINAL_AUTHOR"),
-        metadata.expose_label("GITHUB_PR_NUMBER", new_name ="Closes", separator=" ${config.destinationRepo}#"),
+        metadata.expose_label("GITHUB_PR_NUMBER", new_name ="Closes", separator=" ${config.destination.repo}#"),
         ${move}
     ],
 )`;
   }
 }
 
-type CopybaraConfig = {
-  // Required
-  sotRepo: string;
-  destinationRepo: string;
-  sotBranch: string;
-  destinationBranch: string;
+export type CopybaraConfig = {
+  // Common config
+  sot: RepoConfig;
+  destination: RepoConfig;
+  makeRoot: string;
   committer: string;
-  defaultAuthor: string;
-  copybaraImage: string;
-  includeFilesSot: Array<string>;
-  includeFilesDest: Array<string>;
 
-  // Optional
-  excludeFilesSot?: Array<string>;
-  excludeFilesDest?: Array<string>;
-  makeRootPath?: string;
-  prNumber?: string | number;
+  // Push config
+  push: WorkflowConfig;
+
+  // PR config
+  pr: WorkflowConfig;
+
+  // Advanced config
+  customConfig: string;
+  workflow: string;
+  copybaraOptions: string[];
+  knownHosts: string;
+  prNumber: string | number;
+  createRepo: boolean;
+  image: DockerConfig;
+};
+
+export type RepoConfig = {
+  repo: string;
+  branch: string;
+};
+
+export type DockerConfig = {
+  name: string;
+  tag: string;
+};
+
+export type WorkflowConfig = {
+  include: string[];
+  exclude: string[];
+  move: string[];
+  replace: string[];
 };
