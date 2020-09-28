@@ -6170,20 +6170,19 @@ const action = new copybaraAction_1.CopybaraAction({
         repo: core.getInput("destination_repo"),
         branch: core.getInput("destination_branch"),
     },
-    makeRoot: core.getInput("make_root"),
     committer: core.getInput("committer"),
     // Push config
     push: {
-        include: core.getInput("push_include_files").split(" "),
-        exclude: core.getInput("push_exclude_files").split(" "),
-        move: core.getInput("push_move_files").split(/\r?\n/),
+        include: core.getInput("push_include").split(" "),
+        exclude: core.getInput("push_exclude").split(" "),
+        move: core.getInput("push_move").split(/\r?\n/),
         replace: core.getInput("push_replace").split(/\r?\n/),
     },
     // PR config
     pr: {
-        include: core.getInput("pr_include_files").split(" "),
-        exclude: core.getInput("pr_exclude_files").split(" "),
-        move: core.getInput("pr_move_files").split(/\r?\n/),
+        include: core.getInput("pr_include").split(" "),
+        exclude: core.getInput("pr_exclude").split(" "),
+        move: core.getInput("pr_move").split(/\r?\n/),
         replace: core.getInput("pr_replace").split(/\r?\n/),
     },
     // Advanced config
@@ -6268,6 +6267,79 @@ function getUserAgent() {
 
 exports.getUserAgent = getUserAgent;
 //# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 435:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.copyBaraSky = void 0;
+exports.copyBaraSky = (sotRepo, sotBranch, destinationRepo, destinationBranch, committer, localSot, pushInclude, pushExclude, pushTransformations, prInclude, prExclude, prTransformations) => `
+# Variables
+SOT_REPO = "${sotRepo}"
+SOT_BRANCH = "${sotBranch}"
+DESTINATION_REPO = "${destinationRepo}"
+DESTINATION_BRANCH = "${destinationBranch}"
+COMMITTER = "${committer}"
+LOCAL_SOT = "${localSot}"
+
+PUSH_INCLUDE = [${pushInclude}]
+PUSH_EXCLUDE = [${pushExclude}]
+PUSH_TRANSFORMATIONS = [${pushTransformations}
+]
+
+PR_INCLUDE = [${prInclude}]
+PR_EXCLUDE = [${prExclude}]
+PR_TRANSFORMATIONS = [${prTransformations}
+]
+
+# Push workflow
+core.workflow(
+    name = "push",
+    origin = git.origin(
+        url = LOCAL_SOT if LOCAL_SOT else SOT_REPO,
+        ref = SOT_BRANCH,
+    ),
+    destination = git.github_destination(
+        url = DESTINATION_REPO,
+        push = DESTINATION_BRANCH,
+    ),
+    origin_files = glob(PUSH_INCLUDE, exclude = PUSH_EXCLUDE),
+    authoring = authoring.pass_thru(default = COMMITTER),
+    mode = "ITERATIVE",
+    transformations = [
+        metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes = True),
+        metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
+    ] + PUSH_TRANSFORMATIONS if PUSH_TRANSFORMATIONS else core.reverse(PR_TRANSFORMATIONS),
+)
+
+# Pull Request workflow
+core.workflow(
+    name = "pr",
+    origin = git.github_pr_origin(
+        url = DESTINATION_REPO,
+        branch = DESTINATION_BRANCH,
+    ),
+    destination = git.github_pr_destination(
+        url = SOT_REPO,
+        destination_ref = SOT_BRANCH,
+        integrates = [],
+    ),
+    destination_files = glob(PUSH_INCLUDE, exclude = PUSH_EXCLUDE),
+    origin_files = glob(PR_INCLUDE if PR_INCLUDE else ["**"], exclude = PR_EXCLUDE),
+    authoring = authoring.pass_thru(default = COMMITTER),
+    mode = "CHANGE_REQUEST",
+    set_rev_id = False,
+    transformations = [
+        metadata.save_author("ORIGINAL_AUTHOR"),
+        metadata.expose_label("GITHUB_PR_NUMBER", new_name = "Closes", separator = DESTINATION_REPO.replace("git@github.com:", " ").replace(".git", "#")),
+    ] + PR_TRANSFORMATIONS,
+)
+`;
 
 
 /***/ }),
@@ -9793,39 +9865,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CopyBara = void 0;
+const copy_bara_sky_1 = __webpack_require__(435);
 const exec_1 = __webpack_require__(514);
 const exit_1 = __webpack_require__(633);
 const hostConfig_1 = __webpack_require__(452);
 class CopyBara {
     constructor(image) {
         this.image = image;
-    }
-    static validateConfig(config, workflow) {
-        if (!config.committer)
-            throw 'You need to set a value for "committer".';
-        if (!config.image.name)
-            throw 'You need to set a value for "copybara_image".';
-        if (!config.image.tag)
-            throw 'You need to set a value for "copybara_image_tag".';
-        if (workflow == "push" && !config.push.include.length)
-            throw 'You need to set a value for "push_include_files".';
-        if (workflow == "pr" && !config.pr.include.length)
-            throw 'You need to set a value for "pr_include_files".';
-        if (!config.sot.repo || !config.destination.repo)
-            throw 'You need to set values for "sot_repo" & "destination_repo" or set a value for "custom_config".';
-    }
-    static getConfig(workflow, config) {
-        this.validateConfig(config, workflow);
-        switch (workflow) {
-            case "init":
-                return this.pushConfig(config);
-            case "push":
-                return this.pushConfig(config);
-            case "pr":
-                return this.prConfig(config);
-            default:
-                throw "This tool can only generate configuration files for workflows of type init, push or pr.";
-        }
     }
     download() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -9843,6 +9889,10 @@ class CopyBara {
                     return this.exec(["-e", `COPYBARA_WORKFLOW=${workflow}`], ["--ignore-noop", ...copybaraOptions]);
             }
         });
+    }
+    static getConfig(workflow, config) {
+        this.validateConfig(config, workflow);
+        return copy_bara_sky_1.copyBaraSky(`git@github.com:${config.sot.repo}.git`, config.sot.branch, `git@github.com:${config.destination.repo}.git`, config.destination.branch, config.committer, "file:///usr/src/app", this.generateInExcludes(config.push.include), this.generateInExcludes(config.push.exclude), this.generateTransformations(config.push.move, config.push.replace, "push"), this.generateInExcludes(config.pr.include), this.generateInExcludes(config.pr.exclude), this.generateTransformations(config.pr.move, config.pr.replace, "pr"));
     }
     exec(dockerParams = [], copybaraOptions = []) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -9884,80 +9934,47 @@ class CopyBara {
                 throw 52;
         });
     }
+    static validateConfig(config, workflow) {
+        if (!config.committer)
+            throw 'You need to set a value for "committer".';
+        if (!config.image.name)
+            throw 'You need to set a value for "copybara_image".';
+        if (!config.image.tag)
+            throw 'You need to set a value for "copybara_image_tag".';
+        if (workflow == "push" && !config.push.include.length)
+            throw 'You need to set a value for "push_include".';
+        if (workflow == "pr" && !config.pr.include.length)
+            throw 'You need to set a value for "pr_include".';
+        if (!config.sot.repo || !config.destination.repo)
+            throw 'You need to set values for "sot_repo" & "destination_repo" or set a value for "custom_config".';
+    }
+    static generateInExcludes(inExcludesArray) {
+        const inExcludeGlobs = inExcludesArray.filter((v) => v);
+        let inExcludeString = "";
+        if (inExcludeGlobs.length)
+            inExcludeString = `"${inExcludeGlobs.join('","')}"`;
+        return inExcludeString;
+    }
+    static generateTransformations(moves, replacements, type) {
+        const move = this.transformer(moves, "move");
+        const replace = this.transformer(replacements, "replace");
+        return type == "push"
+            ? // Move first then replace for push
+                move.concat(replace)
+            : // Replace first then move for PR
+                replace.concat(move);
+    }
     static transformer(list, method) {
         let transformation = "";
-        if (list.length) {
-            list.forEach((item) => {
+        list.forEach((item) => {
+            if (item) {
                 const [from, to = "", path] = item.split("||");
                 const glob = path ? path : "**";
                 transformation = transformation.concat(`
         core.${method}("${from}", "${to}", paths = glob(["${glob}"])),`);
-            });
-        }
+            }
+        });
         return transformation;
-    }
-    static pushConfig(config) {
-        let includeGlobs = config.push.include;
-        let excludeGlobs = config.push.exclude;
-        if (config.makeRoot) {
-            config.push.move.push(config.makeRoot);
-            includeGlobs = includeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
-            excludeGlobs = excludeGlobs.map((glob) => glob.replace(/^\/?/, `${config.makeRoot}/`));
-        }
-        const includes = `"${includeGlobs.join('","')}"`;
-        const excludes = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('","')}"]` : "";
-        const transformations = this.transformer(config.push.move, "move").concat(this.transformer(config.push.replace, "replace"));
-        return `
-core.workflow(
-    name = "push",
-    origin = git.origin(
-        url = "file:///usr/src/app",
-        ref = "${config.sot.branch}",
-    ),
-    destination = git.github_destination(
-        url = "git@github.com:${config.destination.repo}.git",
-        push = "${config.destination.branch}",
-    ),
-    origin_files = glob([${includes}]${excludes}),
-    authoring = authoring.pass_thru(default = "${config.committer}"),
-    mode = "ITERATIVE",
-    transformations = [
-        metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
-        metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
-${transformations}
-    ],
-)`;
-    }
-    static prConfig(config) {
-        if (config.makeRoot)
-            config.pr.move.push(`||${config.makeRoot}`);
-        const includeGlobs = config.pr.include;
-        const excludeGlobs = config.pr.exclude;
-        const includes = `"${includeGlobs.join('","')}"`;
-        const excludes = excludeGlobs[0] ? `, exclude = ["${excludeGlobs.join('","')}"]` : "";
-        const transformations = this.transformer(config.pr.replace, "replace").concat(this.transformer(config.pr.move, "move"));
-        return `
-core.workflow(
-    name = "pr",
-    origin = git.github_pr_origin(
-        url = "git@github.com:${config.destination.repo}.git",
-        branch = "${config.destination.branch}",
-    ),
-    destination = git.github_pr_destination(
-        url = "git@github.com:${config.sot.repo}.git",
-        destination_ref = "${config.sot.branch}",
-        integrates = [],
-    ),
-    origin_files = glob([${includes}]${excludes}),
-    authoring = authoring.pass_thru(default = "${config.committer}"),
-    mode = "CHANGE_REQUEST",
-    set_rev_id = False,
-    transformations = [
-        metadata.save_author("ORIGINAL_AUTHOR"),
-        metadata.expose_label("GITHUB_PR_NUMBER", new_name ="Closes", separator=" ${config.destination.repo}#"),
-${transformations}
-    ],
-)`;
     }
 }
 exports.CopyBara = CopyBara;

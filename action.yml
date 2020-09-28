@@ -1,4 +1,4 @@
-name: "Easy Copybara"
+name: "Copybara Action"
 description: "An action for transforming and moving code between repositories."
 author: "Romain Barissat"
 inputs:
@@ -7,7 +7,7 @@ inputs:
     required: true
 
   access_token:
-    description: "Personal access token with `repo` permissions. Always required on *destination* and required on *SoT* only if the variable `sot_branch` below is left empty."
+    description: "Personal access token with `repo` permissions. Always required on *destination*. Required on *SoT* only if the variable `sot_branch` below is left empty and to decide between **push** and **init** workflows."
     required: false
 
   sot_repo:
@@ -15,7 +15,7 @@ inputs:
     required: false
 
   sot_branch:
-    description: "SoT branch. Leave empty to use your repository's default branch."
+    description: "SoT branch. Defaults to your repository's default branch."
     required: false
     default: ""
 
@@ -24,52 +24,47 @@ inputs:
     required: false
 
   destination_branch:
-    description: "Destination branch. Leave empty to use the same as your SoT's branch name."
+    description: "Destination branch. Defaults to the same as your SoT's branch name."
     required: false
     default: ""
 
-  make_root:
-    description: "Use a sub-path of the source repo as root for the destination repo."
-    required: false
-    default: ""
-
-  push_include_files:
+  push_include:
     description: "Files to include when pushing from SoT => Destination (space separated globs). Defaults to all files."
     required: false
     default: "**"
 
-  push_exclude_files:
+  push_exclude:
     description: "Files to exclude when pushing from SoT => Destination (space separated globs). Defaults to none."
     required: false
     default: ""
 
-  push_move_files:
-    description: "Files to move before pushing from SoT => Destination. In the format `from,to` and separate each move operation by a space. Defaults to none."
+  push_move:
+    description: "Files to move before pushing from SoT => Destination. In the format `from||to||match` where `match` is a glob filter to match only specific files within `from` (defaults to all). Separate each move operation by a line return. Defaults to reverse of `pr_move`. `push_move` is always run before `push_replace`."
     required: false
     default: ""
 
   push_replace:
-    description: "Files to move before pushing from SoT => Destination. In the format `search,replace` and separate each replacement operation by a space. Defaults to none. This is a very basic implementation, there is a limitation that you can't use spaces or comas in your search/replace, if you want to do so, you have to use your own Copybara config file."
+    description: "Files to replace before pushing from SoT => Destination. In the format `search||replace||match` where `match` is a glob filter to search only those files (defaults to all). Separate each replace operation by a line return. Defaults to reverse of `pr_replace`. `push_replace` is always run after `push_move`."
     required: false
     default: ""
 
-  pr_include_files:
+  pr_include:
     description: "Files to include when pulling from Destination => SoT (space separated globs). Defaults to all files."
     required: false
     default: "**"
 
-  pr_exclude_files:
+  pr_exclude:
     description: "Files to exclude when pulling from Destination => SoT (space separated globs). Defaults to none."
     required: false
     default: ""
 
-  pr_move_files:
-    description: "Files to move before pulling from Destination => SoT. In the format `from,to` and separate each move operation by a space. Defaults to none."
+  pr_move:
+    description: "Files to move before pushing from Destionation => SoT. In the format `from||to||match` where `match` is a glob filter to match only specific files within `from` (defaults to all). Separate each move operation by a line return. Defaults to none. `pr_move` is always run after `pr_replace`."
     required: false
     default: ""
 
   pr_replace:
-    description: "Files to move before pulling from Destination => SoT. In the format `search,replace` and separate each replacement operation by a space. Defaults to none. This is a very basic implementation, there is a limitation that you can't use spaces or comas in your search/replace, if you want to do so, you have to use your own Copybara config file."
+    description: "Files to replace before pushing from Destionation => SoT. In the format `search||replace||match` where `match` is a glob filter to search only those files (defaults to all). Separate each replace operation by a line return. Defaults to none. `pr_replace` is always run before `pr_move`."
     required: false
     default: ""
 
@@ -79,12 +74,12 @@ inputs:
     default: Github Actions <actions@github.com>
 
   custom_config:
-    description: "Copybara configuration file to use."
+    description: "Copybara custom configuration file to use. Using this will ignore all the pr_* and push_* inputs."
     required: false
     default: ""
 
   workflow:
-    description: "Workflow to execute. Leave empty to auto-detect (init / push / pr)."
+    description: "Workflow to execute. Defaults to auto-detect (init / push / pr)."
     required: false
     default: ""
 
@@ -94,7 +89,7 @@ inputs:
     default: ""
 
   ssh_known_hosts:
-    description: "SSH known hosts file contents, for authenticating with Copybara."
+    description: "SSH known hosts file contents, for authenticating with Copybara with another Git server. GitHub is always included by default."
     required: false
     default: ""
 
