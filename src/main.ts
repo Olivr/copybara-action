@@ -16,22 +16,21 @@ const action = new CopybaraAction({
     repo: core.getInput("destination_repo"),
     branch: core.getInput("destination_branch"),
   },
-  makeRoot: core.getInput("make_root"),
   committer: core.getInput("committer"),
 
   // Push config
   push: {
-    include: core.getInput("push_include_files").split(" "),
-    exclude: core.getInput("push_exclude_files").split(" "),
-    move: core.getInput("push_move_files").split(/\r?\n/),
+    include: core.getInput("push_include").split(" "),
+    exclude: core.getInput("push_exclude").split(" "),
+    move: core.getInput("push_move").split(/\r?\n/),
     replace: core.getInput("push_replace").split(/\r?\n/),
   },
 
   // PR config
   pr: {
-    include: core.getInput("pr_include_files").split(" "),
-    exclude: core.getInput("pr_exclude_files").split(" "),
-    move: core.getInput("pr_move_files").split(/\r?\n/),
+    include: core.getInput("pr_include").split(" "),
+    exclude: core.getInput("pr_exclude").split(" "),
+    move: core.getInput("pr_move").split(/\r?\n/),
     replace: core.getInput("pr_replace").split(/\r?\n/),
   },
 

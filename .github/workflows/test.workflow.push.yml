@@ -47,8 +47,8 @@ jobs:
         with:
           sot_repo: olivr/copybara-action
           destination_repo: olivr/copybara-action-test
-          access_token: ${{ secrets.GH_TOKEN }}
-          ssh_key: ${{ secrets.SSH_KEY }}
+          access_token: ${{ secrets.GH_TOKEN_BOT }}
+          ssh_key: ${{ secrets.GH_SSH_BOT }}
 
       - name: "[Test] Missing repos"
         id: missing-repos
@@ -56,7 +56,7 @@ jobs:
         uses: ./
         with:
           destination_repo: olivr/copybara-action-test
-          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_key: ${{ secrets.GH_SSH_BOT }}
           workflow: push
       - name: ".........⏳"
         if: steps.missing-repos.outcome != 'failure' || !startsWith(steps.missing-repos.outputs.msg, '[action] 51')
@@ -69,7 +69,7 @@ jobs:
         with:
           sot_repo: olivr/copybara-action
           destination_repo: olivr/copybara-action-test
-          ssh_key: ${{ secrets.SSH_KEY }}
+          ssh_key: ${{ secrets.GH_SSH_BOT }}
       - name: "..........⏳"
         if: steps.missing-token.outcome != 'failure' || !startsWith(steps.missing-token.outputs.msg, '[action] 51')
         run: exit 1

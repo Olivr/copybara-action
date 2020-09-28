@@ -123,11 +123,12 @@ jobs:
 
 ## Generated config
 
-So you don't have to start your custom config from scratch, you can download the generated one.
+So you don't have to start your custom config from scratch, you can check out the [config template](/src/copy.bara.sky.ts) used by this action or even better, you can download the one generated for your use case.
 
 1. In your repo(s), add the secret `ACTIONS_STEP_DEBUG` and set it to `true`
 2. Run the action workflow (ie. push a commit to SoT and create a PR in destination)
 3. Check out the artifacts for your action workflow runs
+4. **Delete the `ACTIONS_STEP_DEBUG` secret or set it to `false`** (or you may get false positives)
 
 It will look like this:
 ![artifact](images/artifact.png)
