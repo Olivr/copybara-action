@@ -36,7 +36,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.0
+      - uses: olivr/copybara-action@v1.2.1
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           access_token: ${{ secrets.GH_TOKEN }}
@@ -60,7 +60,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.0
+      - uses: olivr/copybara-action@v1.2.1
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           access_token: ${{ secrets.GH_TOKEN }}
@@ -91,7 +91,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.0
+      - uses: olivr/copybara-action@v1.2.1
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           access_token: ${{ secrets.GH_TOKEN }}
@@ -165,7 +165,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.0
+      - uses: olivr/copybara-action@v1.2.1
         with:
           access_token: ${{ secrets.GH_TOKEN }}
           ssh_key: ${{ secrets.SSH_KEY }}

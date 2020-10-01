@@ -1,3 +1,10 @@
+### [1.2.1](https://github.com/olivr/copybara-action/compare/v1.2.0...v1.2.1) (2020-10-01)
+
+
+### Bug Fixes
+
+* Readme must be in root to publish Github Action ([bda8bec](https://github.com/olivr/copybara-action/commit/bda8bece34f140b3b5105bb2aba26d50aa9a1287))
+
 ## [1.2.0](https://github.com/olivr/copybara-action/compare/v1.1.2...v1.2.0) (2020-10-01)
 
 
