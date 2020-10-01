@@ -11264,8 +11264,8 @@ class CopybaraAction {
     getCurrentBranch() {
         if (!this.current.branch) {
             let ref = "";
-            if (/^refs\/heads\//.test(github_1.context.payload.base_ref))
-                ref = github_1.context.payload.base_ref;
+            if (github_1.context.payload.pull_request && /^refs\/heads\//.test(github_1.context.payload.pull_request.base.ref))
+                ref = github_1.context.payload.pull_request.base.ref;
             else if (/^refs\/heads\//.test(github_1.context.ref))
                 ref = github_1.context.ref;
             else
