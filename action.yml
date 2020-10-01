@@ -1,5 +1,5 @@
 name: "Copybara Action 2"
-description: "An action for transforming and moving code between repositories."
+description: "Transform and move code between repositories using CopyBara. Start with ZERO config and 100% customizable."
 author: "Romain Barissat"
 inputs:
   ssh_key:
