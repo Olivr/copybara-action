@@ -26,15 +26,15 @@ This action comes with sensible defaults to make it **very easy** for you to use
 - Pull Requests can be created on both SoT and destination
 - Pull Requests created on destination are always copied by Copybara to SoT
 
-> This is the flow used for this action's [basic usage](basic-usage.md), you can make it whatever you want it to be in [advanced usage](advanced-usage.md).
+> This is the flow used for this action's [basic usage](docs/basic-usage.md), you can make it whatever you want it to be in [advanced usage](docs/advanced-usage.md).
 
-## 🔥 [Basic usage](basic-usage.md)
+## 🔥 [Basic usage](docs/basic-usage.md)
 
-## 🧨 [Advanced usage](advanced-usage.md)
+## 🧨 [Advanced usage](docs/advanced-usage.md)
 
-## 🔘 [All options](inputs.md)
+## 🔘 [All options](docs/inputs.md)
 
-## 💚 [Contributing](CONTRIBUTING.md)
+## 💚 [Contributing](docs/CONTRIBUTING.md)
 
 ## 💬 Support
 
