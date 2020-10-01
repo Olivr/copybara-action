@@ -1,3 +1,25 @@
+## [1.2.0](https://github.com/olivr/copybara-action/compare/v1.1.2...v1.2.0) (2020-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* Several inputs and their formats have changed
+
+### Features
+
+* Add move and replace transformations ([e14a1e1](https://github.com/olivr/copybara-action/commit/e14a1e1f2f03313e185a7ae1074ff1d8773fff40))
+
+
+### Bug Fixes
+
+* Fix PR flow on pull_request_target ([ee5bd2a](https://github.com/olivr/copybara-action/commit/ee5bd2a5a42145b9200eed98134c8ba4219fd22b))
+* Fix PR flow on pull_request_target ([4049d86](https://github.com/olivr/copybara-action/commit/4049d86a6564a5e5ac451706590e61674d83151d))
+* Fix PR flow on pull_request_target ([35aa552](https://github.com/olivr/copybara-action/commit/35aa55297ccd219f1829bb12cef8919bbd60a46d))
+* In/exclude_files should play well with make_root_path ([9f1d025](https://github.com/olivr/copybara-action/commit/9f1d025a53044f39db9f2a8ff258f4b86602f38c))
+
+
+* Changed structure of inputs and internal code ([095d67b](https://github.com/olivr/copybara-action/commit/095d67b992915d34076a2956fbcca633f9e9596a))
+
 ### [1.1.2](https://github.com/olivr/copybara-action/compare/v1.1.1...v1.1.2) (2020-09-24)
 
 

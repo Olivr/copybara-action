@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.1.2
+      - uses: olivr/copybara-action@v1.2.0
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           sot_repo: your/repo
@@ -63,7 +63,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.1.2
+      - uses: olivr/copybara-action@v1.2.0
         with:
           access_token: ${{ secrets.GH_TOKEN }}
           ssh_key: ${{ secrets.SSH_KEY }}
@@ -90,7 +90,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.1.2
+      - uses: olivr/copybara-action@v1.2.0
         with:
           access_token: ${{ secrets.GH_TOKEN }}
           ssh_key: ${{ secrets.SSH_KEY }}
@@ -112,7 +112,7 @@ jobs:
   move-code:
     runs-on: ubuntu-latest
     steps:
-      - uses: olivr/copybara-action@v1.1.2
+      - uses: olivr/copybara-action@v1.2.0
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           workflow: pr
