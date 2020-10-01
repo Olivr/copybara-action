@@ -1,4 +1,4 @@
-name: "Copybara Action"
+name: "Copybara Action 2"
 description: "An action for transforming and moving code between repositories."
 author: "Romain Barissat"
 inputs:
