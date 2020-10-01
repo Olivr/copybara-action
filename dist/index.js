@@ -11262,15 +11262,14 @@ class CopybaraAction {
         return this.current.repo;
     }
     getCurrentBranch() {
+        var _a;
         if (!this.current.branch) {
-            let ref = "";
-            if (github_1.context.payload.pull_request && /^refs\/heads\//.test(github_1.context.payload.pull_request.base.ref))
-                ref = github_1.context.payload.pull_request.base.ref;
+            if (github_1.context.payload.pull_request && github_1.context.payload.pull_request.base.ref)
+                this.current.branch = github_1.context.payload.pull_request.base.ref;
             else if (/^refs\/heads\//.test(github_1.context.ref))
-                ref = github_1.context.ref;
+                this.current.branch = github_1.context.ref.replace(/^refs\/heads\//, "");
             else
-                throw `Cannot determine head branch from ${github_1.context.payload.base_ref} and ${github_1.context.ref}`;
-            this.current.branch = ref.replace(/^refs\/heads\//, "");
+                throw `Cannot determine head branch from ${(_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base.ref} and ${github_1.context.ref}`;
         }
         core.debug(`Current branch is ${this.current.branch}`);
         return this.current.branch;
