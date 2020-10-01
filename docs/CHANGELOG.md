@@ -1,3 +1,10 @@
+### [1.2.2](https://github.com/olivr/copybara-action/compare/v1.2.1...v1.2.2) (2020-10-01)
+
+
+### Bug Fixes
+
+* Update action's description ([af07ab1](https://github.com/olivr/copybara-action/commit/af07ab16220e1995ade74b00f3eac590e866b5c2))
+
 ### [1.2.1](https://github.com/olivr/copybara-action/compare/v1.2.0...v1.2.1) (2020-10-01)
 
 
