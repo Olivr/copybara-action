@@ -24,12 +24,10 @@ export class CopybaraAction {
 
   getCurrentBranch() {
     if (!this.current.branch) {
-      let ref = "";
-      if (context.payload.pull_request && /^refs\/heads\//.test(context.payload.pull_request.base.ref))
-        ref = context.payload.pull_request.base.ref;
-      else if (/^refs\/heads\//.test(context.ref)) ref = context.ref;
-      else throw `Cannot determine head branch from ${context.payload.base_ref} and ${context.ref}`;
-      this.current.branch = ref.replace(/^refs\/heads\//, "");
+      if (context.payload.pull_request && context.payload.pull_request.base.ref)
+        this.current.branch = context.payload.pull_request.base.ref;
+      else if (/^refs\/heads\//.test(context.ref)) this.current.branch = context.ref.replace(/^refs\/heads\//, "");
+      else throw `Cannot determine head branch from ${context.payload.pull_request?.base.ref} and ${context.ref}`;
     }
     core.debug(`Current branch is ${this.current.branch}`);
     return this.current.branch;
