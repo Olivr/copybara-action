@@ -1,6 +1,6 @@
 # Basic usage
 
-As per the [default flow](README.md#default-flow), Pull Requests **must be merged on the repo that acts as the Source of Truth (SoT)**. They must never be merged on destination!
+As per the [default flow](/README.md#default-flow), Pull Requests **must be merged on the repo that acts as the Source of Truth (SoT)**. They must never be merged on destination!
 
 Once they are merged on SoT, Copybara will automatically push the code to the destination branch and close the Pull Request that was initially created on destination (if any).
 
