@@ -1,3 +1,10 @@
+### [1.2.3](https://github.com/olivr/copybara-action/compare/v1.2.2...v1.2.3) (2021-07-16)
+
+
+### Bug Fixes
+
+* Init destination repo even when push is specified as a workflow ([6b2860c](https://github.com/olivr/copybara-action/commit/6b2860c82d71666e23ed343e8c0714cce316df00))
+
 ### [1.2.2](https://github.com/olivr/copybara-action/compare/v1.2.1...v1.2.2) (2020-10-01)
 
 
