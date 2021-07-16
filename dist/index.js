@@ -11321,7 +11321,7 @@ class CopybaraAction {
                     const sotBranch = yield this.getSotBranch();
                     if (this.getCurrentBranch() != sotBranch)
                         exit_1.exit(54, `Nothing to do in the SoT repo except on the "${sotBranch}" branch.`);
-                    this.config.workflow = (yield this.isInitWorkflow()) ? "init" : "push";
+                    this.config.workflow = "push";
                 }
                 else if (this.getCurrentRepo() === this.config.destination.repo) {
                     if (!this.getPRNumber())
@@ -11334,6 +11334,11 @@ class CopybaraAction {
                 else
                     exit_1.exit(51, 'The current repo is neither the SoT nor destination repo. You need to set a value for "workflow" or run this action in the SoT or destination repo.');
             }
+            // Detect if init is needed when push is specified
+            if (this.config.workflow == "push" &&
+                this.getCurrentRepo() === this.config.sot.repo &&
+                this.getCurrentBranch() == (yield this.getSotBranch()))
+                this.config.workflow = (yield this.isInitWorkflow()) ? "init" : "push";
             core.debug(`Workflow is ${this.config.workflow}`);
             return this.config.workflow;
         });
