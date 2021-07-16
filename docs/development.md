@@ -9,7 +9,7 @@ yarn install
 Build the typescript and package it for distribution
 
 ```sh
-yarn run build && yarn run package
+yarn build
 ```
 
 Run the tests :heavy_check_mark:
