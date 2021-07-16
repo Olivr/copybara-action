@@ -46,7 +46,7 @@ jobs:
       - name: "[Test] Basic usage"
         uses: ./
         with:
-          sot_repo: olivr/copybara-action
+          sot_repo: Olivr/copybara-action
           destination_repo: olivr-test/copybara-action-test
           access_token: ${{ secrets.GH_TOKEN_BOT }}
           ssh_key: ${{ secrets.GH_SSH_BOT }}
@@ -69,7 +69,7 @@ jobs:
   # When a new test PR is created on SoT (by the job above), close it
   cleanup-test:
     name: "[Chore] Close Test Pull Request"
-    if: github.repository == 'olivr/copybara-action' && github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[Test PR]')
+    if: github.repository == 'Olivr/copybara-action' && github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[Test PR]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
