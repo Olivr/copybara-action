@@ -5,7 +5,7 @@ on:
 
 jobs:
   publish-copybara:
-    if: github.repository == 'olivr/copybara-action'
+    if: github.repository == 'Olivr/copybara-action'
     runs-on: ubuntu-latest
     name: Publish to Docker Hub
     steps:

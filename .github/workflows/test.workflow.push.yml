@@ -33,7 +33,7 @@ jobs:
 
   e2e-test:
     name: "'Push' E2E tests"
-    if: github.repository == 'olivr/copybara-action'
+    if: github.repository == 'Olivr/copybara-action'
     needs: [build]
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +45,7 @@ jobs:
       - name: "[Test] Basic usage"
         uses: ./
         with:
-          sot_repo: olivr/copybara-action
+          sot_repo: Olivr/copybara-action
           destination_repo: olivr-test/copybara-action-test
           access_token: ${{ secrets.GH_TOKEN_BOT }}
           ssh_key: ${{ secrets.GH_SSH_BOT }}
@@ -67,7 +67,7 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          sot_repo: olivr/copybara-action
+          sot_repo: Olivr/copybara-action
           destination_repo: olivr-test/copybara-action-test
           ssh_key: ${{ secrets.GH_SSH_BOT }}
       - name: "..........⏳"
