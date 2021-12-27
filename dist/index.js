@@ -6309,6 +6309,7 @@ core.workflow(
         push = DESTINATION_BRANCH,
     ),
     origin_files = glob(PUSH_INCLUDE, exclude = PUSH_EXCLUDE),
+    destination_files = glob(PR_INCLUDE, exclude = PR_EXCLUDE),
     authoring = authoring.pass_thru(default = COMMITTER),
     mode = "ITERATIVE",
     transformations = [
