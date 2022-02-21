@@ -1,12 +1,17 @@
 name: Publish Copybara Docker Image
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 * * 0" # Weekly
 
 jobs:
   publish-copybara:
     if: github.repository == 'Olivr/copybara-action'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
     name: Publish to Docker Hub
     steps:
       - uses: actions/checkout@v2
@@ -14,10 +19,60 @@ jobs:
           repository: google/copybara
           fetch-depth: 1
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v1.1.0
+      - name: Get Copybara latest commit's SHA
+        run: echo "COPYBARA_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Extract metadata from GitHub Action context
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            olivr/copybara
+            ghcr.io/olivr/copybara
+          tags: |
+            type=raw,${{ env.COPYBARA_SHA }}
+            type=schedule,pattern={{date 'YYYYMMDD'}}
+          flavor: |
+            latest=true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
           username: olivrbot
           password: ${{ secrets.DOCKER_TOKEN_BOT }}
-          repository: olivr/copybara
-          tags: latest
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      # Remove when https://github.com/google/copybara/pull/186 is merged
+      - name: Use working Dockerfile
+        run: curl -s https://raw.githubusercontent.com/Olivr/copybara-action/main/.github/Dockerfile > Dockerfile
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # Experimental
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+      - name: Sign the image with GitHub OIDC **EXPERIMENTAL**
+        run: cosign sign --oidc-issuer https://token.actions.githubusercontent.com ${TAGS}
+        env:
+          COSIGN_EXPERIMENTAL: 1
+          TAGS: ${{ steps.meta.outputs.tags }}
