@@ -10,7 +10,7 @@ jobs:
   # When new code is pushed on destination, create a PR to trigger an E2E test of the PR workflow
   prepare-test:
     name: "[Chore] Create Test Pull Request"
-    if: github.repository == 'olivr-test/copybara-action-test' && github.event_name == 'push'
+    if: github.repository == 'mailchain/copybara-action-test' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,7 +40,7 @@ jobs:
   # When a new test PR is created on destination (by the job above), copy it to SoT
   e2e-test:
     name: "'PR' E2E tests"
-    if: github.repository == 'olivr-test/copybara-action-test' && github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[Test PR]')
+    if: github.repository == 'mailchain/copybara-action-test' && github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[Test PR]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,8 +49,8 @@ jobs:
       - name: "[Test] Basic usage"
         uses: ./
         with:
-          sot_repo: Olivr/copybara-action
-          destination_repo: olivr-test/copybara-action-test
+          sot_repo: mailchain/copybara-action
+          destination_repo: mailchain/copybara-action-test
           access_token: ${{ secrets.GH_TOKEN_BOT }}
           ssh_key: ${{ secrets.GH_SSH_BOT }}
 
@@ -72,7 +72,7 @@ jobs:
   # When a new test PR is created on SoT (by the job above), close it
   cleanup-test:
     name: "[Chore] Close Test Pull Request"
-    if: github.repository == 'Olivr/copybara-action' && github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[Test PR]')
+    if: github.repository == 'mailchain/copybara-action' && github.event_name == 'pull_request' && startsWith(github.event.pull_request.title, '[Test PR]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

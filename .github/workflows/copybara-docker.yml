@@ -6,7 +6,7 @@ on:
 
 jobs:
   publish-copybara:
-    if: github.repository == 'Olivr/copybara-action'
+    if: github.repository == 'mailchain/copybara-action'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,8 +27,8 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            olivr/copybara
-            ghcr.io/olivr/copybara
+            mailchain/copybara
+            ghcr.io/mailchain/copybara
           tags: |
             type=raw,${{ env.COPYBARA_SHA }}
             type=schedule,pattern={{date 'YYYYMMDD'}}
@@ -45,7 +45,7 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
-          username: olivrbot
+          username: mailchain
           password: ${{ secrets.DOCKER_TOKEN_BOT }}
 
       - name: Login to GitHub Container Registry
@@ -57,7 +57,7 @@ jobs:
 
       # Remove when https://github.com/google/copybara/pull/186 is merged
       - name: Use working Dockerfile
-        run: curl -s https://raw.githubusercontent.com/Olivr/copybara-action/main/.github/Dockerfile > Dockerfile
+        run: curl -s https://raw.githubusercontent.com/mailchain/copybara-action/main/.github/Dockerfile > Dockerfile
 
       - name: Build and push
         uses: docker/build-push-action@v2

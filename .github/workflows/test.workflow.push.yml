@@ -33,7 +33,7 @@ jobs:
 
   e2e-test:
     name: "'Push' E2E tests"
-    if: github.repository == 'Olivr/copybara-action'
+    if: github.repository == 'mailchain/copybara-action'
     needs: [build]
     runs-on: ubuntu-latest
     steps:
@@ -45,8 +45,8 @@ jobs:
       - name: "[Test] Basic usage"
         uses: ./
         with:
-          sot_repo: Olivr/copybara-action
-          destination_repo: olivr-test/copybara-action-test
+          sot_repo: mailchain/copybara-action
+          destination_repo: mailchain/copybara-action-test
           access_token: ${{ secrets.GH_TOKEN_BOT }}
           ssh_key: ${{ secrets.GH_SSH_BOT }}
 
@@ -55,7 +55,7 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          destination_repo: olivr-test/copybara-action-test
+          destination_repo: mailchain/copybara-action-test
           ssh_key: ${{ secrets.GH_SSH_BOT }}
           workflow: push
       - name: ".........⏳"
@@ -67,8 +67,8 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          sot_repo: Olivr/copybara-action
-          destination_repo: olivr-test/copybara-action-test
+          sot_repo: mailchain/copybara-action
+          destination_repo: mailchain/copybara-action-test
           ssh_key: ${{ secrets.GH_SSH_BOT }}
       - name: "..........⏳"
         if: steps.missing-token.outcome != 'failure' || !startsWith(steps.missing-token.outputs.msg, '[action]')
