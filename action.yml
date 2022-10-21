@@ -97,7 +97,7 @@ inputs:
   copybara_image:
     description: "Copybara Docker image to run."
     required: false
-    default: "olivr/copybara"
+    default: "mailchain/copybara"
 
   copybara_image_tag:
     description: "Copybara Docker image tag to use."

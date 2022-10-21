@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/olivr/copybara-action.git"
+    "url": "git+https://github.com/mailchain/copybara-action.git"
   },
   "keywords": [
     "actions",

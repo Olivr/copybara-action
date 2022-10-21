@@ -36,7 +36,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.3
+      - uses: mailchain/copybara-action@v1.2.3
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           access_token: ${{ secrets.GH_TOKEN }}
@@ -60,7 +60,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.3
+      - uses: mailchain/copybara-action@v1.2.3
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           access_token: ${{ secrets.GH_TOKEN }}
@@ -91,7 +91,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.3
+      - uses: mailchain/copybara-action@v1.2.3
         with:
           ssh_key: ${{ secrets.SSH_KEY }}
           access_token: ${{ secrets.GH_TOKEN }}
@@ -106,7 +106,7 @@ jobs:
 
 ### Complex structure
 
-> You can experiment with our [playground repo template](https://github.com/olivr/copybara-playground) to try various scenarios before you implement it in your own repo.
+> You can experiment with our [playground repo template](https://github.com/mailchain/copybara-playground) to try various scenarios before you implement it in your own repo.
 
 Let's say you have a private monorepo with the following file structure:
 
@@ -165,7 +165,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: olivr/copybara-action@v1.2.3
+      - uses: mailchain/copybara-action@v1.2.3
         with:
           access_token: ${{ secrets.GH_TOKEN }}
           ssh_key: ${{ secrets.SSH_KEY }}
