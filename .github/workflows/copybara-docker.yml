@@ -1,8 +1,6 @@
 name: Publish Copybara Docker Image
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * 0" # Weekly
+  push:
 
 jobs:
   publish-copybara:
