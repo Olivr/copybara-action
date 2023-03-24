@@ -33,8 +33,6 @@ COPY --from=build /tmp/copybara/ /opt/copybara/
 COPY --from=buildtools /go/bin/buildozer /go/bin/buildifier /usr/bin/
 COPY .docker/entrypoint.sh /usr/local/bin/copybara
 RUN chmod +x /usr/local/bin/copybara
-RUN ssh-keygen -R github.com
-RUN curl -L https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
 RUN apt-get update && \
   apt-get install -y git && \
   apt-get clean
