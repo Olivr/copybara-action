@@ -5,14 +5,14 @@
     "lib": ["ES2022"],
     "target": "ES2022",
     "module": "ES2022",
-    "composite": true,
+    // "composite": false,
     "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": true,
+    // "declaration": true,
+    // "declarationMap": true,
     "incremental": true,
-    "esModuleInterop": true,
-    "types": ["jest", "node", "@types/jest"],
-    "sourceMap": true
+    // "esModuleInterop": true,
+    "types": ["jest", "node", "@types/jest"]
+    // "sourceMap": true
   },
   "ts-node": {
     "esm": true,

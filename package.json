@@ -5,8 +5,8 @@
   "description": "Transform and move code between repositories.",
   "main": "src/main.ts",
   "scripts": {
-    "build": "ncc build --source-map --license licenses.txt",
-    "build:check": "yarn build && [[ -z $(git status -s dist) ]]",
+    "build": "ncc build --license licenses.txt",
+    "build:check": "yarn build && [[ -z $(git status -s dist ':^dist/src') ]]",
     "format": "prettier --write **/*.ts",
     "format:check": "prettier --check **/*.ts",
     "lint": "eslint --cache --fix src/**/*.ts",

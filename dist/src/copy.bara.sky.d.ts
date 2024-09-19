@@ -1,2 +1,0 @@
-export declare const copyBaraSky: (sotRepo: string, sotBranch: string, destinationRepo: string, destinationBranch: string, committer: string, localSot: string, pushInclude: string, pushExclude: string, pushTransformations: string, prInclude: string, prExclude: string, prTransformations: string) => string;
-//# sourceMappingURL=copy.bara.sky.d.ts.map
