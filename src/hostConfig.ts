@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-extraneous-class */
 import { ensureFile, writeFile } from "fs-extra";
 import { homedir } from "os";
 
@@ -22,7 +23,7 @@ export class hostConfig {
       [user]
           name = ${committerName}
           email = ${committerEmail}
-      `
+      `,
     );
   }
 
