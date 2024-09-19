@@ -1,7 +1,7 @@
-import { copyBaraSky } from "./copy.bara.sky";
 import { exec } from "@actions/exec";
-import { exitCodes } from "./exit";
-import { hostConfig } from "./hostConfig";
+import { copyBaraSky } from "./copy.bara.sky.js";
+import { exitCodes } from "./exit.js";
+import { hostConfig } from "./hostConfig.js";
 
 export class CopyBara {
   constructor(readonly image: DockerConfig) {}
@@ -15,13 +15,13 @@ export class CopyBara {
       case "init":
         return this.exec(
           ["-e", "COPYBARA_WORKFLOW=push"],
-          ["--force", "--init-history", "--ignore-noop", ...copybaraOptions]
+          ["--force", "--init-history", "--ignore-noop", ...copybaraOptions],
         );
 
       case "pr":
         return this.exec(
           ["-e", "COPYBARA_WORKFLOW=pr", "-e", `COPYBARA_SOURCEREF=${ref}`],
-          ["--ignore-noop", ...copybaraOptions]
+          ["--ignore-noop", ...copybaraOptions],
         );
 
       default:
@@ -43,7 +43,7 @@ export class CopyBara {
       this.generateTransformations(config.push.move, config.push.replace, "push"),
       this.generateInExcludes(config.pr.include),
       this.generateInExcludes(config.pr.exclude),
-      this.generateTransformations(config.pr.move, config.pr.replace, "pr")
+      this.generateTransformations(config.pr.move, config.pr.replace, "pr"),
     );
   }
 
@@ -76,7 +76,7 @@ export class CopyBara {
       {
         ignoreReturnCode: true,
         env: { COPYBARA_OPTIONS: copybaraOptions.join(" ") },
-      }
+      },
     );
 
     const exitCode = exitCodes[execExitCode];
