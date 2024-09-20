@@ -14,8 +14,7 @@ export const exitCodes: {
     type: "error",
   },
   2: {
-    msg:
-      "Error in the configuration, flags values or in general an error attributable to the user. Check the logs for details.",
+    msg: "Error in the configuration, flags values or in general an error attributable to the user. Check the logs for details.",
     ns: "copybara",
     type: "error",
   },
@@ -87,14 +86,20 @@ export function exit(exitCode: number, message = "") {
   switch (ec.type) {
     case "success":
       core.info(msg);
-      process.exit(0); // eslint-disable-line no-process-exit
+      // eslint-disable-next-line
+      process.exit(0);
+      break;
 
     case "warning":
       core.warning(msg);
-      process.exit(0); // eslint-disable-line no-process-exit
+      // eslint-disable-next-line
+      process.exit(0);
+      break;
 
     default:
       core.setFailed(msg);
-      process.exit(1); // eslint-disable-line no-process-exit
+      // eslint-disable-next-line
+      process.exit(1);
+      break;
   }
 }
