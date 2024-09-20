@@ -2087,7 +2087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@semantic-release/release-notes-generator@npm:^14.0.0-beta.1, @semantic-release/release-notes-generator@npm:^14.0.1":
+"@semantic-release/release-notes-generator@npm:^14.0.0-beta.1":
   version: 14.0.1
   resolution: "@semantic-release/release-notes-generator@npm:14.0.1"
   dependencies:
@@ -3702,7 +3702,6 @@ __metadata:
     "@semantic-release/exec": "npm:^6.0.3"
     "@semantic-release/git": "npm:^10.0.1"
     "@semantic-release/github": "npm:^10.3.4"
-    "@semantic-release/release-notes-generator": "npm:^14.0.1"
     "@types/eslint__js": "npm:^8.42.3"
     "@types/fs-extra": "npm:^11.0.4"
     "@types/jest": "npm:^29.5.13"
