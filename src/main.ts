@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
-import { CopybaraAction } from "./copybaraAction";
-import { exit } from "./exit";
+import { CopybaraAction } from "./copybaraAction.js";
+import { exit } from "./exit.js";
 
 const action = new CopybaraAction({
   // Credentials

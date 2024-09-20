@@ -1,11 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "strict": true,
-    "noImplicitAny": true,
+    "rootDirs": ["src"],
+    "outDir": "dist",
+    "lib": ["ES2022"],
+    "target": "ES6",
+    "module": "CommonJS",
+    // "composite": false,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    // "declaration": true,
+    // "declarationMap": true,
+    "incremental": true,
+    // "esModuleInterop": true,
+    "types": ["jest", "node", "@types/jest"]
+    // "sourceMap": true
   },
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "include": ["./src/**/*", "./tests/**/*"]
 }
