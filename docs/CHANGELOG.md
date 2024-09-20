@@ -1,3 +1,10 @@
+### [1.2.4](https://github.com/olivr/copybara-action/compare/v1.2.3...v1.2.4) (2024-09-20)
+
+
+### Bug Fixes
+
+* GitHub RSA key was changed and prevented this action from working ([#114](https://github.com/olivr/copybara-action/issues/114)) ([a70cd50](https://github.com/olivr/copybara-action/commit/a70cd50734a79a6c432829e9afc48b91d6d7040b)), closes [#101](https://github.com/olivr/copybara-action/issues/101)
+
 ### [1.2.3](https://github.com/olivr/copybara-action/compare/v1.2.2...v1.2.3) (2021-07-16)
 
 
