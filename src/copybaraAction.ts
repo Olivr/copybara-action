@@ -1,13 +1,13 @@
-import * as artifact from "@actions/artifact";
+import { DefaultArtifactClient } from "@actions/artifact";
 import * as core from "@actions/core";
-import path from "path";
 import { context } from "@actions/github";
-import { CopyBara, CopybaraConfig, RepoConfig } from "./copybara";
-import { exit } from "./exit";
-import { GitHub } from "./github";
-import { homedir } from "os";
-import { hostConfig } from "./hostConfig";
 import { pathExists, readFileSync } from "fs-extra";
+import { homedir } from "os";
+import path from "path";
+import { CopyBara, CopybaraConfig, RepoConfig } from "./copybara.js";
+import { exit } from "./exit.js";
+import { GitHub } from "./github.js";
+import { hostConfig } from "./hostConfig.js";
 
 export class CopybaraAction {
   gh: GitHub | undefined;
@@ -95,7 +95,7 @@ export class CopybaraAction {
       } else
         exit(
           51,
-          'The current repo is neither the SoT nor destination repo. You need to set a value for "workflow" or run this action in the SoT or destination repo.'
+          'The current repo is neither the SoT nor destination repo. You need to set a value for "workflow" or run this action in the SoT or destination repo.',
         );
     }
 
@@ -120,7 +120,7 @@ export class CopybaraAction {
     return !(await this.getGitHubClient().branchExists(
       this.config.destination.repo,
       await this.getDestinationBranch(),
-      this.config.createRepo
+      this.config.createRepo,
     ));
   }
 
@@ -147,7 +147,7 @@ export class CopybaraAction {
 
     // Upload Copybara config as an artifact
     if (core.isDebug()) {
-      const artifactClient = artifact.create();
+      const artifactClient = new DefaultArtifactClient();
       artifactClient.uploadArtifact("copy.bara.sky", [hostConfig.cbConfigPath], homedir());
     }
   }
