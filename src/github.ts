@@ -13,7 +13,7 @@ export class GitHub {
 
     return this.repoExists(owner, repo, createRepo).then((repoExists) => {
       if (repoExists) {
-        return this.api.repos
+        return this.api.rest.repos
           .getBranch({ owner, repo, branch })
           .then((res) => res.status == 200)
           .catch((err) => {
@@ -26,26 +26,26 @@ export class GitHub {
 
   async getDefaultBranch(repoFullName: string): Promise<string> {
     const [owner, repo] = repoFullName.split("/");
-    return this.api.repos.get({ owner, repo }).then((res) => res.data.default_branch);
+    return this.api.rest.repos.get({ owner, repo }).then((res) => res.data.default_branch);
   }
 
   private async repoExists(owner: string, repo: string, createRepo: boolean): Promise<boolean> {
-    return this.api.repos
+    return this.api.rest.repos
       .get({ owner, repo })
       .then((res) => res.status == 200)
       .catch((err) => {
         if (err.status == 404) {
-          if (createRepo) return this.createRepo(owner, repo).then((res) => res.status == 200);
+          if (createRepo) return this.createRepo(owner, repo).then((res) => res.status >= 200 && res.status < 300);
           else return false;
         } else throw err;
       });
   }
 
   private async createRepo(owner: string, repo: string) {
-    const currentUser = await this.api.users.getAuthenticated().then((res) => res.data.name);
+    const currentUser = await this.api.rest.users.getAuthenticated().then((res) => res.data.name);
 
     return currentUser == owner
-      ? this.api.repos.createForAuthenticatedUser({ name: repo })
-      : this.api.repos.createInOrg({ org: owner, name: repo });
+      ? this.api.rest.repos.createForAuthenticatedUser({ name: repo })
+      : this.api.rest.repos.createInOrg({ org: owner, name: repo });
   }
 }

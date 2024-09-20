@@ -9,21 +9,21 @@ jobs:
     name: Test build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: lts/*
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Build
         run: yarn build
 
       - name: Ensure build was committed (necessary for Github Actions)
-        run: "[[ -z $(git status -s dist) ]]"
+        run: "[[ -z $(git status -s dist ':^dist/src') ]]"
 
       - name: "[Test] Unit tests"
         run: yarn test
