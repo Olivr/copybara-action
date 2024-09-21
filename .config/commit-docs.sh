@@ -1,3 +1,4 @@
+# Copied from commit-build.sh
 # This script is used for repos that need to commit a build folder (eg. Github actions)
 
 # Add more sources/destinations by separating them by spaces (ie. source="src lib")
@@ -11,7 +12,7 @@ then
 
   # Run build command
   echo "Generating $build..."
-  node .config/autodoc.js
+  node .config/autodoc.mjs
   
   # If this generated unstaged changes in $build folder(s)
   if [[ $(git status --porcelain $build | egrep '^(([M ]M)|\?\?)') ]]

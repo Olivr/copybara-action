@@ -70,7 +70,7 @@ inputs:
     default: ""
 
   committer:
-    description: "Who will commit changes."
+    description: "Who will commit changes (author will be original committer)."
     required: false
     default: Github Actions <actions@github.com>
 

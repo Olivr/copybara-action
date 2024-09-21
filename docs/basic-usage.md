@@ -8,7 +8,8 @@ Once they are merged on SoT, Copybara will automatically push the code to the de
 
 - **Source of Truth (SoT) repo**
 - **Destination repo**
-- **[SSH private key](ssh-keys.md)** with write access to destination repo (used to push code)
+- **[SSH private key](ssh-keys.md)** with write access to both repos (used to
+  push code on destination and create/commit to branches on SoT)
 - **[GitHub Personal access token](https://github.com/settings/tokens)** with 'repo' permissions (used for determining default branches and managing pull requests on both repos)
 
 ## Examples
