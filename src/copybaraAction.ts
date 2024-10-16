@@ -19,7 +19,7 @@ export class CopybaraAction {
   getCurrentRepo() {
     if (!this.current.repo) this.current.repo = `${context.repo.owner}/${context.repo.repo}`;
     core.debug(`Current repo is ${this.current.repo}`);
-    return this.current.repo;
+    return this.current.repo.toLowerCase();
   }
 
   getCurrentBranch() {
@@ -76,7 +76,7 @@ export class CopybaraAction {
       if (!this.config.sot.repo || !this.config.destination.repo)
         exit(51, 'You need to set values for "sot_repo" & "destination_repo" or set a value for "workflow".');
 
-      if (this.getCurrentRepo() === this.config.sot.repo) {
+      if (this.getCurrentRepo() === this.config.sot.repo.toLowerCase()) {
         if (context.eventName != "push") exit(54, "Nothing to do in the SoT repo except for push events.");
 
         const sotBranch = await this.getSotBranch();
@@ -84,7 +84,7 @@ export class CopybaraAction {
           exit(54, `Nothing to do in the SoT repo except on the "${sotBranch}" branch.`);
 
         this.config.workflow = "push";
-      } else if (this.getCurrentRepo() === this.config.destination.repo) {
+      } else if (this.getCurrentRepo() === this.config.destination.repo.toLowerCase()) {
         if (!this.getPRNumber()) exit(54, "Nothing to do in the destination repo except for Pull Requests.");
 
         const destinationBranch = await this.getDestinationBranch();
