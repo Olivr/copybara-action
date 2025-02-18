@@ -60,6 +60,7 @@ core.workflow(
     destination = git.github_pr_destination(
         url = SOT_REPO,
         destination_ref = SOT_BRANCH,
+        title = "$\{GITHUB_PR_TITLE\}",
         integrates = [],
     ),
     destination_files = glob(PUSH_INCLUDE, exclude = PUSH_EXCLUDE),
