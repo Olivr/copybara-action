@@ -1,3 +1,10 @@
+### [1.2.5](https://github.com/olivr/copybara-action/compare/v1.2.4...v1.2.5) (2025-05-21)
+
+
+### Bug Fixes
+
+* Custom CopyBara file import was broken ([29e9491](https://github.com/olivr/copybara-action/commit/29e9491577ff59646a3d98b4c72c0de1ea77b439))
+
 ### [1.2.4](https://github.com/olivr/copybara-action/compare/v1.2.3...v1.2.4) (2024-09-20)
 
 
