@@ -3,7 +3,7 @@ import * as core from "@actions/core";
 import { context } from "@actions/github";
 import { pathExists, readFileSync } from "fs-extra";
 import { homedir } from "os";
-import path from "path";
+import * as path from "path";
 import { CopyBara, CopybaraConfig, RepoConfig } from "./copybara.js";
 import { exit } from "./exit.js";
 import { GitHub } from "./github.js";
