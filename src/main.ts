@@ -4,7 +4,7 @@ import { exit } from "./exit.js";
 
 const action = new CopybaraAction({
   // Credentials
-  sshKey: core.getInput("ssh_key", { required: true }),
+  sshKey: core.getInput("ssh_key"),
   accessToken: core.getInput("access_token"),
 
   // Common config
